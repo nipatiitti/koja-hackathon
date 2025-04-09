@@ -237,7 +237,7 @@ def create_air_conditioner_pipe(
 ):
     model_info = {
         "id": "pipemesh",
-        "models": "ventilation_pipe_{}-{}.stl".format(square_width, square_height),
+        "models": ["ventilation_pipe_{}-{}.stl".format(square_width, square_height)],
         "min": [-1, -1, -1],
         "max": [-1, -1, -1],
         "center": [-1, -1, -1],

@@ -60,7 +60,6 @@ const ModelViewer = ({
 
       const modelBuffers = await Promise.all(await getModels(modelInfo))
       const loader = new STLLoader()
-      console.log(modelBuffers)
       const loadedGeometries = modelBuffers.map((buffer) => loader.parse(buffer))
       setGeometries(loadedGeometries)
       setLoading(false)
@@ -113,6 +112,7 @@ const ModelViewer = ({
           ))
         )}
       </group>
+      <AirConditioner />
     </TransformControls>
   )
 }
@@ -121,18 +121,25 @@ const AirConditioner = () => {
   const [geometries, setGeometries] = useState<BufferGeometry[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const groupRef = useRef<Group>(null)
 
   useEffect(() => {
     const loadAirConditioner = async () => {
       try {
         setLoading(true)
         setError(null)
-        const response = await fetch(`${API_URL}/koja/air_conditioner`)
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`)
+        const response1 = await fetch(`${API_URL}/koja/air_conditioner`)
+        if (!response1.ok) {
+          throw new Error(`HTTP error! status: ${response1.status}`)
         }
-        const modelInfos = (await response.json()) as ModelInfo[]
+        const modelInfos = (await response1.json()) as ModelInfo[]
+
+        const response2 = await fetch(`${API_URL}/koja/air_conditioner_pipe`)
+        if (!response2.ok) {
+          throw new Error(`HTTP error! status: ${response2.status}`)
+        }
+        modelInfos.push(JSON.parse(await response2.json()))
+
+        console.log(modelInfos)
 
         if (!modelInfos || modelInfos.length === 0) {
           throw new Error('No model data received')
@@ -154,6 +161,10 @@ const AirConditioner = () => {
         console.log('Number of model buffers:', modelBuffers.length)
         const loader = new STLLoader()
         const loadedGeometries = modelBuffers.map((buffer, index) => {
+          if (buffer.byteLength < 50) {
+            console.log('Small buffer detected:', new TextDecoder().decode(buffer), 'Buffer size:', buffer.byteLength)
+          }
+
           try {
             return loader.parse(buffer)
           } catch (parseError) {
@@ -173,7 +184,7 @@ const AirConditioner = () => {
   }, [])
 
   return (
-    <group ref={groupRef} position={[2, 0, 0]} rotation={[-Math.PI / 2, 0, 0]} scale={[0.5, 0.5, 0.5]}>
+    <>
       {loading ? (
         // Placeholder while loading
         <mesh>
@@ -193,14 +204,14 @@ const AirConditioner = () => {
             key={index}
             geometry={geometry}
             scale={0.001}
-            rotation={index <= 1 ? [-Math.PI / 2, 0, 0] : [0, 0, 0]}
-            position={index <= 1 ? [0, 0.45, 0] : [0, 0, 0]}
+            rotation={index <= 1 ? [0, 0, 0] : [Math.PI / 2, 0, 0]}
+            position={index <= 1 ? [0, 0.5, -2 + 0.45] : [0, 0.5, -2]}
           >
-            <meshStandardMaterial color={0x999999} metalness={0.8} roughness={0.2} envMapIntensity={1.0} />
+            <meshStandardMaterial color={0xffffff} metalness={0.8} roughness={0.2} envMapIntensity={1.0} />{' '}
           </mesh>
         ))
       )}
-    </group>
+    </>
   )
 }
 
@@ -230,7 +241,6 @@ export const Scene = ({ serverRacks }: { serverRacks: ServerRackType[] }) => {
             setOrbit={setOrbit}
           />
         ))}
-        <AirConditioner />
         <EffectComposer enableNormalPass>
           <SSAO
             blendFunction={BlendFunction.MULTIPLY}
