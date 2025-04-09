@@ -15,11 +15,10 @@ const ServerRack = ({ id, setServerRacks, serverRacks }: Props) => {
     setCurrentServerRack(serverRacks.find((rack) => rack.id === id))
   }, [id, serverRacks])
 
-  const updateServerRacks = (serverAmount: number) => {
-    console.log([id, serverAmount])
+  const updateServerRacks = (serverRack: ServerRackType) => {
     const updatedRacks = serverRacks.map((rack) => {
       if (rack.id === id) {
-        return { ...rack, serverAmount: serverAmount }
+        return { ...serverRack }
       }
       return rack
     })
@@ -44,6 +43,7 @@ const ServerRack = ({ id, setServerRacks, serverRacks }: Props) => {
             type="text"
             value={currentServerRack.name}
             className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+            onChange={(e) => updateServerRacks({ ...currentServerRack, name: e.target.value })}
           />
         </div>
         <div className="flex justify-center items-center gap-2">
@@ -54,7 +54,7 @@ const ServerRack = ({ id, setServerRacks, serverRacks }: Props) => {
             className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
             placeholder="Amount of servers"
             value={currentServerRack.serverAmount}
-            onChange={(e) => updateServerRacks(Number(e.target.value))}
+            onChange={(e) => updateServerRacks({ ...currentServerRack, serverAmount: Number(e.target.value) })}
           />
         </div>
         <button onClick={deleteServerRack}>Delete</button>
