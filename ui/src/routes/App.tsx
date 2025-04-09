@@ -3,6 +3,7 @@ import RackConfig from '../components/RackConfig'
 import { Scene } from '../components/Scene'
 import { ServerRackType } from '../types'
 import Instructions from './Instructions'
+import AchievementList from '../components/AchievementList'
 
 const App = () => {
   const [serverRacks, setServerRacks] = useState<ServerRackType[]>([])
@@ -13,6 +14,7 @@ const App = () => {
         <Scene serverRacks={serverRacks} setServerRacks={setServerRacks} />
       </div>
       <Instructions />
+      <AchievementList />
       <div className="relative md:absolute md:shadow-none shadow-md md:top-0 md:right-0 md:h-auto h-[33vh] md:max-h-screen w-full md:w-auto overflow-x-auto">
         <RackConfig serverRacks={serverRacks} setServerRacks={setServerRacks} />
       </div>

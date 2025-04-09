@@ -1,6 +1,8 @@
 import { FaPlus } from 'react-icons/fa'
 import { ServerRackType } from '../types'
 import ServerRack from './ServerRack'
+import { useAtom } from 'jotai'
+import { achievementsAtom } from '../helper'
 
 interface Props {
   serverRacks: ServerRackType[]
@@ -10,6 +12,8 @@ interface Props {
 const genId = () => Math.random().toString(36).substring(2, 9)
 
 const RackConfig = ({ serverRacks, setServerRacks }: Props) => {
+  const [completedAchievements, setCompletedAchievements] = useAtom(achievementsAtom)
+
   const addServerRack = () => {
     setServerRacks((prevRacks) => {
       console.log([prevRacks.length * 1.4, 0, 0])
@@ -25,6 +29,10 @@ const RackConfig = ({ serverRacks, setServerRacks }: Props) => {
         },
       ]
     })
+    console.log(serverRacks)
+    if (!completedAchievements.includes('rack-added')) {
+      setCompletedAchievements((prev) => [...prev, 'rack-added'])
+    }
   }
 
   return (
