@@ -65,7 +65,7 @@ const RackConfig = ({ serverRacks, setServerRacks }: Props) => {
         className="mb-4 w-full px-4 py-2 border border-gray-300 rounded-sm shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
       />
       <label
-        className="fixed top-4 text-sm text-text-950 rounded-sm bg-secondary gap-2 px-6 py-3 shadow-md"
+        className="fixed top-3 text-sm text-text-950 rounded-sm bg-secondary gap-2 px-6 py-3 shadow-md"
         style={{ left: '15%', transform: 'translateX(-50%)' }}
       >
         <div>Total Wattage: {serverRacks.reduce((sum, rack) => sum + rack.serverWattage, 0)} W</div>
