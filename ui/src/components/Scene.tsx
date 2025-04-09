@@ -61,6 +61,7 @@ const ModelViewer = ({
 
       const modelBuffers = await Promise.all(await getModels(modelInfo))
       const loader = new STLLoader()
+      console.log(modelBuffers)
       const loadedGeometries = modelBuffers.map((buffer) => loader.parse(buffer))
       setGeometries(loadedGeometries)
       setLoading(false)
@@ -111,25 +112,58 @@ const ModelViewer = ({
   )
 }
 const AirConditioner = () => {
-  const [modelInfos, setModelInfos] = useState<ModelInfo[]>([])
   const [geometries, setGeometries] = useState<BufferGeometry[]>([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const groupRef = useRef<Group>(null)
 
   useEffect(() => {
     const loadAirConditioner = async () => {
       try {
         setLoading(true)
+        setError(null)
         const response = await fetch(`${API_URL}/koja/air_conditioner`)
-        const mfs = (await response.json()) as ModelInfo[]
-        setModelInfos(mfs)
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`)
+        }
+        const modelInfos = (await response.json()) as ModelInfo[]
 
-        const modelBuffers = await Promise.all(mfs.flatMap((modelInfo) => getModels(modelInfo)))
+        if (!modelInfos || modelInfos.length === 0) {
+          throw new Error('No model data received')
+        }
+
+        console.log('Model infos:', modelInfos)
+
+        const modelBuffers = await Promise.all(
+          modelInfos.flatMap((modelInfo) =>
+            modelInfo.models.map(async (model) => {
+              console.log('Fetching model:', `${API_URL}/models/${modelInfo.id}/${model}`)
+              const modelResponse = await fetch(`${API_URL}/models/${modelInfo.id}/${model}`)
+              if (!modelResponse.ok) {
+                throw new Error(`Failed to fetch model data: ${modelResponse.status}`)
+              }
+              const buffer = await modelResponse.arrayBuffer()
+              console.log('Model buffer size:', buffer.byteLength)
+              return buffer
+            }),
+          ),
+        )
+
+        console.log('Number of model buffers:', modelBuffers.length)
         const loader = new STLLoader()
-        const loadedGeometries = modelBuffers.map((buffer) => loader.parse(buffer))
+        const loadedGeometries = modelBuffers.map((buffer, index) => {
+          try {
+            console.log(`Parsing model ${index} with size:`, buffer.byteLength)
+            return loader.parse(buffer)
+          } catch (parseError) {
+            console.error(`Failed to parse model ${index}:`, parseError)
+            throw parseError
+          }
+        })
         setGeometries(loadedGeometries)
       } catch (error) {
         console.error('Failed to load air conditioner:', error)
+        setError(error instanceof Error ? error.message : 'Failed to load air conditioner')
       } finally {
         setLoading(false)
       }
@@ -144,6 +178,12 @@ const AirConditioner = () => {
         <mesh>
           <boxGeometry args={[1, 1, 1]} />
           <meshStandardMaterial color={0x0000ff} wireframe={true} opacity={0.5} transparent={true} />
+        </mesh>
+      ) : error ? (
+        // Error state
+        <mesh>
+          <boxGeometry args={[1, 1, 1]} />
+          <meshStandardMaterial color={0xff0000} wireframe={true} opacity={0.5} transparent={true} />
         </mesh>
       ) : (
         // Render actual models
