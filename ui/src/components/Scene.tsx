@@ -1,3 +1,4 @@
+import { OrbitControls } from '@react-three/drei'
 import { Canvas } from '@react-three/fiber'
 import { EffectComposer, SSAO } from '@react-three/postprocessing'
 import { BlendFunction } from 'postprocessing'
@@ -54,7 +55,7 @@ const ModelViewer = ({ modelInfo }: { modelInfo: ModelInfo }) => {
   }
 
   return (
-    <group ref={groupRef} rotation={[Math.PI / 2, Math.PI / 2, 0]}>
+    <group ref={groupRef} rotation={[-Math.PI / 2, 0, 0]}>
       {geometries.map((geometry, index) => (
         <mesh key={index} geometry={geometry} scale={0.001}>
           <meshStandardMaterial
@@ -85,7 +86,15 @@ export const Scene = () => {
 
   return (
     <div className="w-full h-full">
-      <Canvas camera={{ position: [0, 0, 3], fov: 80 }}>
+      <Canvas camera={{ position: [0, 2, 3], fov: 80 }}>
+        <OrbitControls
+          enablePan={true}
+          enableZoom={true}
+          enableRotate={true}
+          minDistance={1}
+          maxDistance={10}
+          target={[0, 1, 0]}
+        />
         <Skybox />
         <ambientLight intensity={2} />
         <pointLight position={[10, 10, 10]} intensity={2} />
@@ -94,17 +103,16 @@ export const Scene = () => {
         {modelInfo && <ModelViewer modelInfo={modelInfo} />}
         <EffectComposer enableNormalPass>
           <SSAO
-            blendFunction={BlendFunction.MULTIPLY} // blend mode
-            samples={30} // amount of samples per pixel (shouldn't be a multiple of the ring count)
-            rings={4} // amount of rings in the occlusion sampling pattern
-            distanceThreshold={1.0} // global distance threshold at which the occlusion effect starts to fade out. min: 0, max: 1
-            distanceFalloff={0.0} // distance falloff. min: 0, max: 1
-            rangeThreshold={0.5} // local occlusion range threshold at which the occlusion starts to fade out. min: 0, max: 1
-            rangeFalloff={0.1} // occlusion range falloff. min: 0, max: 1
-            luminanceInfluence={0.9} // how much the luminance of the scene influences the ambient occlusion
-            radius={20} // occlusion sampling radius
-            //scale={0.5} // scale of the ambient occlusion
-            bias={0.5} // occlusion bias
+            blendFunction={BlendFunction.MULTIPLY}
+            samples={30}
+            rings={4}
+            distanceThreshold={1.0}
+            distanceFalloff={0.0}
+            rangeThreshold={0.5}
+            rangeFalloff={0.1}
+            luminanceInfluence={0.9}
+            radius={20}
+            bias={0.5}
           />
         </EffectComposer>
       </Canvas>
