@@ -5,7 +5,8 @@ import { useAtom } from 'jotai'
 import { achievementsAtom } from '../helper'
 
 const achievementDescriptions = {
-  'rack-added': 'Added your first server rack!',
+  'rack-added': `Let's Get Started: You added your first server rack!`,
+  'powerful-server': `Unleash The Power: You added a server with more than 1 kW!`,
 }
 
 const AchievementList = () => {

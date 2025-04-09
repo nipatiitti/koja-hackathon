@@ -35,7 +35,7 @@ const RackConfig = ({ serverRacks, setServerRacks }: Props) => {
     if (!achievements.includes('rack-added')) {
       setAchievements((prev) => [...prev, 'rack-added'])
       localStorage.setItem('accomplishedAchievements', JSON.stringify([...achievements, 'rack-added']))
-      toast.success(`Achievement unlocked: added your first server rack!`)
+      toast.success(`Achievement unlocked: Let's Get Started!`)
     }
   }
 

@@ -1,6 +1,9 @@
 import { useEffect, useState } from 'react'
 import { IoCloseCircleOutline } from 'react-icons/io5'
 import { ServerRackType } from '../types'
+import toast from 'react-hot-toast'
+import { useAtom } from 'jotai'
+import { achievementsAtom } from '../helper'
 
 interface Props {
   id: string
@@ -12,6 +15,7 @@ interface Props {
 
 const ServerRack = ({ id, setServerRacks, serverRacks, serverWattage }: Props) => {
   const [currentServerRack, setCurrentServerRack] = useState<null | ServerRackType>()
+  const [achievements, setAchievements] = useAtom(achievementsAtom)
 
   useEffect(() => {
     setCurrentServerRack(serverRacks.find((rack) => rack.id === id))
@@ -26,6 +30,13 @@ const ServerRack = ({ id, setServerRacks, serverRacks, serverWattage }: Props) =
         return rack
       }),
     )
+    if (serverRack.serverWattage > 1000) {
+      if (!achievements.includes('powerful-server')) {
+        setAchievements((prev) => [...prev, 'powerful-server'])
+        localStorage.setItem('accomplishedAchievements', JSON.stringify([...achievements, 'powerful-server']))
+        toast.success(`Achievement unlocked: Unleash The Power!`)
+      }
+    }
   }
 
   const deleteServerRack = () => {
