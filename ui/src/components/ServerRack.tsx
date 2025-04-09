@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { ServerRackType } from '../types'
-import { FaMinus } from 'react-icons/fa'
+import { IoCloseCircleOutline } from 'react-icons/io5'
 
 interface Props {
   id: number
@@ -36,8 +36,14 @@ const ServerRack = ({ id, setServerRacks, serverRacks }: Props) => {
   }
 
   return (
-    <div className="flex flex-col rounded-sm bg-secondary gap-2 px-6 py-3 shadow-md">
+    <div className="relative flex flex-col rounded-sm bg-secondary gap-2 px-6 py-3 shadow-md">
       <div className="flex flex-col gap-0.5 justify-start items-start">
+        <button
+          onClick={deleteServerRack}
+          className="absolute text-text-950 hover:text-red-500 focus:outline-none top-0 right-2"
+        >
+          <IoCloseCircleOutline className="inline" />
+        </button>
         <label className="text-sm text-text-950" htmlFor="name">
           Name
         </label>
@@ -62,13 +68,6 @@ const ServerRack = ({ id, setServerRacks, serverRacks }: Props) => {
           onChange={(e) => updateServerRacks({ ...currentServerRack, serverAmount: Number(e.target.value) })}
         />
       </div>
-      <button
-        onClick={deleteServerRack}
-        className="flex justify-center items-center px-2 py-1 text-sm text-text-950 bg-red-300 rounded-sm hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-red-200 focus:ring-offset-2"
-      >
-        <FaMinus className="inline mr-1" />
-        <div>Delete</div>
-      </button>
     </div>
   )
 }
