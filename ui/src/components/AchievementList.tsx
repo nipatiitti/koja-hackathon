@@ -4,16 +4,23 @@ import { IoMdClose } from 'react-icons/io'
 import { useAtom } from 'jotai'
 import { achievementsAtom } from '../helper'
 
-const achievementDescriptions = {
-  'rack-added': {
+const achievementDescriptions = [
+  {
+    code: 'rack-added',
     title: `Let's Get Started!`,
     description: `You added your first server rack!`,
   },
-  'powerful-server': {
+  {
+    code: 'powerful-server',
     title: `Unleash The Power!`,
     description: `You added a server with more than 1kW wattage!`,
   },
-}
+  {
+    code: 'over9000',
+    title: `It's Over 9000!`,
+    description: `Your server room is consuming more than 9kW of power!`,
+  },
+]
 
 const AchievementList = () => {
   const [visible, setVisible] = useState(false)
@@ -58,9 +65,11 @@ const AchievementList = () => {
                 <div key={index} className="text-white flex flex-col justify-center items-center">
                   <p className="flex gap-2 justify-center items-center">
                     <FaTrophy />
-                    {achievementDescriptions[achievement].title}
+                    {achievementDescriptions.find((desc) => desc.code === achievement)?.title}
                   </p>
-                  <p className="text-sm">{achievementDescriptions[achievement].description}</p>
+                  <p className="text-sm">
+                    {achievementDescriptions.find((desc) => desc.code === achievement)?.description}
+                  </p>
                 </div>
               ))}
             </ul>

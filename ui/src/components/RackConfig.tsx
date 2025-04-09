@@ -4,7 +4,7 @@ import { FaPlus } from 'react-icons/fa'
 import { achievementsAtom } from '../helper'
 import { ServerRackType } from '../types'
 import ServerRack from './ServerRack'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 interface Props {
   serverRacks: ServerRackType[]
@@ -16,6 +16,17 @@ const genId = () => Math.random().toString(36).substring(2, 9)
 const RackConfig = ({ serverRacks, setServerRacks }: Props) => {
   const [searchQuery, setSearchQuery] = useState('')
   const [achievements, setAchievements] = useAtom(achievementsAtom)
+
+  useEffect(() => {
+    console.log(serverRacks.reduce((acc, rack) => acc + rack.serverWattage, 0))
+    if (serverRacks.reduce((acc, rack) => acc + rack.serverWattage, 0) > 9000) {
+      if (!achievements.includes('over9000')) {
+        setAchievements((prev) => [...prev, 'over9000'])
+        localStorage.setItem('accomplishedAchievements', JSON.stringify([...achievements, 'over9000']))
+        toast.success(`Achievement unlocked: It's Over 9000!`)
+      }
+    }
+  }, [serverRacks])
 
   const addServerRack = () => {
     setServerRacks((prevRacks) => {
