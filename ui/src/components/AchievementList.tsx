@@ -5,8 +5,14 @@ import { useAtom } from 'jotai'
 import { achievementsAtom } from '../helper'
 
 const achievementDescriptions = {
-  'rack-added': `Let's Get Started: You added your first server rack!`,
-  'powerful-server': `Unleash The Power: You added a server with more than 1 kW!`,
+  'rack-added': {
+    title: `Let's Get Started!`,
+    description: `You added your first server rack!`,
+  },
+  'powerful-server': {
+    title: `Unleash The Power!`,
+    description: `You added a server with more than 1kW wattage!`,
+  },
 }
 
 const AchievementList = () => {
@@ -47,11 +53,15 @@ const AchievementList = () => {
             }`}
           >
             <h1 className="text-xl mb-2">Achievements</h1>
-            <ul className="list-disc list-inside">
+            <ul className="list-disc list-inside text-white flex flex-col justify-center items-center gap-2">
               {achievements.map((achievement, index) => (
-                <li key={index} className="text-white">
-                  {achievementDescriptions[achievement] || achievement}
-                </li>
+                <div key={index} className="text-white flex flex-col justify-center items-center">
+                  <p className="flex gap-2 justify-center items-center">
+                    <FaTrophy />
+                    {achievementDescriptions[achievement].title}
+                  </p>
+                  <p className="text-sm">{achievementDescriptions[achievement].description}</p>
+                </div>
               ))}
             </ul>
             <button className="mt-4 px-4 py-2 bg-red-500 text-white rounded" onClick={resetAchievements}>
