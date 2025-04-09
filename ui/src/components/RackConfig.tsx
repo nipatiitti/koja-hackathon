@@ -27,8 +27,8 @@ const RackConfig = ({ serverRacks, setServerRacks }: Props) => {
   }
 
   return (
-    <div className="flex flex-col py-2 px-4 items-center">
-      <h2 className="text-2xl font-bold mb-4 text-primary-300">Server Room</h2>
+    <div className="flex flex-col pt-8 px-6 items-center">
+      <h2 className="text-2xl font-bold mb-4 text-text-950">Server Room</h2>
       <div className="mb-4">
         <div className="flex flex-col gap-4">
           {serverRacks.map((rack, index) => (

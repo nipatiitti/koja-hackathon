@@ -1,5 +1,5 @@
-import { ServerRackType } from '../types'
 import { useEffect, useState } from 'react'
+import { ServerRackType } from '../types'
 
 interface Props {
   id: number
@@ -35,30 +35,28 @@ const ServerRack = ({ id, setServerRacks, serverRacks }: Props) => {
   }
 
   return (
-    <div className="flex justify-center items-center">
-      <div>
-        <div className="flex justify-center items-center gap-2">
-          <label className="text-sm">Name</label>
-          <input
-            type="text"
-            className="mt-1 block w-32 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-            value={currentServerRack.name}
-            onChange={(e) => updateServerRacks({ ...currentServerRack, name: e.target.value })}
-          />
-        </div>
-        <div className="flex justify-center items-center gap-2">
-          <label className="text-sm">Servers</label>
-          <input
-            type="number"
-            id="server-amount"
-            className="mt-1 block w-32 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-            placeholder="Amount of servers"
-            value={currentServerRack.serverAmount}
-            onChange={(e) => updateServerRacks({ ...currentServerRack, serverAmount: Number(e.target.value) })}
-          />
-        </div>
-        <button onClick={deleteServerRack}>Delete</button>
+    <div className="flex flex-col rounded-sm bg-secondary p-4 mb-4 shadow-md">
+      <div className="flex justify-center items-center gap-2">
+        <label className="text-sm">Name</label>
+        <input
+          type="text"
+          className="mt-1 block w-32 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+          value={currentServerRack.name}
+          onChange={(e) => updateServerRacks({ ...currentServerRack, name: e.target.value })}
+        />
       </div>
+      <div className="flex justify-center items-center gap-2">
+        <label className="text-sm">Servers</label>
+        <input
+          type="number"
+          id="server-amount"
+          className="mt-1 block w-32 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+          placeholder="Amount of servers"
+          value={currentServerRack.serverAmount}
+          onChange={(e) => updateServerRacks({ ...currentServerRack, serverAmount: Number(e.target.value) })}
+        />
+      </div>
+      <button onClick={deleteServerRack}>Delete</button>
     </div>
   )
 }
