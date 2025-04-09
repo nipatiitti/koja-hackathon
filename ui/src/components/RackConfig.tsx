@@ -65,16 +65,11 @@ const RackConfig = ({ serverRacks, setServerRacks }: Props) => {
         className="mb-4 w-full px-4 py-2 border border-gray-300 rounded-sm shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
       />
       <label
-        className="fixed top-4 text-sm text-text-950 rounded-sm bg-secondary gap-2 px-6 py-3 shadow-md"
+        className="fixed top-3 text-sm text-text-950 rounded-sm bg-secondary gap-2 px-6 py-3 shadow-md"
         style={{ left: '15%', transform: 'translateX(-50%)' }}
       >
-        Total Wattage: {serverRacks.reduce((sum, rack) => sum + rack.serverWattage, 0)} W
-      </label>
-      <label
-        className="fixed top-4 text-sm text-text-950 rounded-sm bg-secondary gap-2 px-6 py-3 shadow-md"
-        style={{ left: '30%', transform: 'translateX(-50%)' }}
-      >
-        Total Server Count: {serverRacks.reduce((sum, rack) => sum + rack.serverAmount, 0)}
+        <div>Total Wattage: {serverRacks.reduce((sum, rack) => sum + rack.serverWattage, 0)} W</div>
+        <div>Total Server Count: {serverRacks.reduce((sum, rack) => sum + rack.serverAmount, 0)}</div>
       </label>
       <div className="mb-4">
         <div className="flex flex-col gap-4">
