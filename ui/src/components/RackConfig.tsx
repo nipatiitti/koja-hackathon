@@ -4,6 +4,7 @@ import { FaPlus } from 'react-icons/fa'
 import { achievementsAtom } from '../helper'
 import { ServerRackType } from '../types'
 import ServerRack from './ServerRack'
+import { useState } from 'react'
 
 interface Props {
   serverRacks: ServerRackType[]
@@ -13,6 +14,7 @@ interface Props {
 const genId = () => Math.random().toString(36).substring(2, 9)
 
 const RackConfig = ({ serverRacks, setServerRacks }: Props) => {
+  const [searchQuery, setSearchQuery] = useState('')
   const [achievements, setAchievements] = useAtom(achievementsAtom)
 
   const addServerRack = () => {
@@ -39,12 +41,21 @@ const RackConfig = ({ serverRacks, setServerRacks }: Props) => {
     }
   }
 
+  const filteredRacks = serverRacks.filter((rack) => rack.name.toLowerCase().includes(searchQuery.toLowerCase()))
+
   return (
     <div className="flex flex-col pt-8 px-6 items-center">
       <h2 className="text-2xl font-bold mb-4 text-text-950">Server Room</h2>
+      <input
+        type="text"
+        placeholder="Search by name"
+        value={searchQuery}
+        onChange={(e) => setSearchQuery(e.target.value)}
+        className="mb-4 w-full px-4 py-2 border border-gray-300 rounded-sm shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+      />
       <div className="mb-4">
         <div className="flex flex-col gap-4">
-          {serverRacks.map((rack, index) => (
+          {filteredRacks.map((rack, index) => (
             <ServerRack
               key={index}
               id={rack.id}
