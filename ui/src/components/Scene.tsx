@@ -183,7 +183,7 @@ const Enclosure = ({ serverRack }: { serverRack: ServerRackType }) => {
     <>
       {loading ? (
         // Placeholder while loading
-        <mesh>
+        <mesh position={[0, 0, (0.17 / 2) * serverRack.serverAmount]}>
           <boxGeometry args={[1, 1, 1]} />
           <meshStandardMaterial color={0x0000ff} wireframe={true} opacity={0.5} transparent={true} />
         </mesh>
@@ -308,13 +308,13 @@ const AirConditioner = ({ serverRack }: { serverRack: ServerRackType }) => {
     <>
       {loading ? (
         // Placeholder while loading
-        <mesh>
+        <mesh position={[1.5, 0, 0.09 * serverRack.serverAmount]}>
           <boxGeometry args={[1, 1, 1]} />
           <meshStandardMaterial color={0x0000ff} wireframe={true} opacity={0.5} transparent={true} />
         </mesh>
       ) : error ? (
         // Error state
-        <mesh>
+        <mesh position={[1.5, 0, 0.09 * serverRack.serverAmount]}>
           <boxGeometry args={[1, 1, 1]} />
           <meshStandardMaterial color={0xff0000} wireframe={true} opacity={0.5} transparent={true} />
         </mesh>
@@ -405,13 +405,13 @@ const AirConditionerPipe = ({ serverRack }: { serverRack: ServerRackType }) => {
     <>
       {loading ? (
         // Placeholder while loading
-        <mesh>
+        <mesh position={[1.03, 0, (0.175 * serverRack.serverAmount) / 2]}>
           <boxGeometry args={[1, 1, 1]} />
           <meshStandardMaterial color={0x0000ff} wireframe={true} opacity={0.5} transparent={true} />
         </mesh>
       ) : error ? (
         // Error state
-        <mesh>
+        <mesh position={[1.03, 0, (0.175 * serverRack.serverAmount) / 2]}>
           <boxGeometry args={[1, 1, 1]} />
           <meshStandardMaterial color={0xff0000} wireframe={true} opacity={0.5} transparent={true} />
         </mesh>
