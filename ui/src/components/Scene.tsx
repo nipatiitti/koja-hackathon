@@ -127,15 +127,15 @@ const ModelViewer = ({
           // Actual models once loaded
           geometries.map((geometry, index) => (
             <mesh key={index} geometry={geometry} scale={0.001}>
-              <meshStandardMaterial
+              <meshPhysicalMaterial
                 color={
                   isSelected
                     ? '#00ff00'
                     : serverRack.highlighted
-                    ? '#ff0000'
+                    ? 0xbf47ad
                     : modelInfo?.materials[index] === 'plastic'
                     ? 0x111111
-                    : 0xffffff
+                    : 0xd1d1d1
                 }
                 metalness={modelInfo?.materials[index] === 'plastic' ? 0.2 : 0.8}
                 roughness={modelInfo?.materials[index] === 'plastic' ? 0.8 : 0.05}
@@ -246,6 +246,7 @@ const AirConditioner = ({ serverRack }: { serverRack: ServerRackType }) => {
   const [geometries, setGeometries] = useState<BufferGeometry[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [materials, setMaterials] = useState<string[]>([])
 
   useEffect(() => {
     const loadAirConditioner = async () => {
@@ -264,8 +265,12 @@ const AirConditioner = ({ serverRack }: { serverRack: ServerRackType }) => {
         }
 
         const modelBuffers = await Promise.all(
-          modelInfos.flatMap((modelInfo) =>
+          modelInfos.flatMap((modelInfo, i) =>
             modelInfo.models.map(async (model) => {
+              console.log({ ...modelInfo, index: i })
+              if (i === 1) {
+                setMaterials(modelInfo.materials)
+              }
               const modelResponse = await fetch(`${API_URL}/models/${modelInfo.id}/${model}`)
               if (!modelResponse.ok) {
                 throw new Error(`Failed to fetch model data: ${modelResponse.status}`)
@@ -315,17 +320,26 @@ const AirConditioner = ({ serverRack }: { serverRack: ServerRackType }) => {
         </mesh>
       ) : (
         // Render actual models
-        geometries.map((geometry, index) => (
-          <mesh
-            key={index}
-            geometry={geometry}
-            scale={0.001}
-            rotation={index <= 1 ? [Math.PI / 2, -Math.PI / 2, 0] : [0, 0, Math.PI / 2]}
-            position={index <= 1 ? [1.05, 0, 0.09 * serverRack.serverAmount] : [1.5, 0, 0.09 * serverRack.serverAmount]}
-          >
-            <meshStandardMaterial color={0xffffff} metalness={0.8} roughness={0.2} envMapIntensity={1.0} />{' '}
-          </mesh>
-        ))
+        geometries.map((geometry, index) => {
+          console.log(index, materials[index])
+          return (
+            <mesh
+              key={index}
+              geometry={geometry}
+              scale={0.001}
+              rotation={index <= 1 ? [Math.PI / 2, -Math.PI / 2, 0] : [0, 0, Math.PI / 2]}
+              position={
+                index <= 1 ? [1.05, 0, 0.09 * serverRack.serverAmount] : [1.5, 0, 0.09 * serverRack.serverAmount]
+              }
+            >
+              {materials[index - 2] === 'plastic' ? (
+                <meshStandardMaterial color={0x111111} metalness={0.2} roughness={0.8} envMapIntensity={0.5} />
+              ) : (
+                <meshPhysicalMaterial color={0xffffff} metalness={0.9} roughness={0.1} />
+              )}
+            </mesh>
+          )
+        })
       )}
 
       <AirConditionerPipe serverRack={serverRack} />
@@ -411,7 +425,7 @@ const AirConditionerPipe = ({ serverRack }: { serverRack: ServerRackType }) => {
             rotation={[Math.PI / 2, -Math.PI / 2, 0]}
             position={[1.03, 0, (0.175 * serverRack.serverAmount) / 2]}
           >
-            <meshStandardMaterial color={0xffffff} metalness={0.8} roughness={0.2} envMapIntensity={1.0} />
+            <meshPhysicalMaterial color={0xe0e0e0} metalness={0.8} roughness={0.2} envMapIntensity={1.0} />
           </mesh>
         ))
       )}
@@ -472,7 +486,7 @@ export const Scene = ({
       <EffectComposer enableNormalPass>
         <SSAO
           blendFunction={BlendFunction.MULTIPLY}
-          samples={1}
+          samples={5}
           rings={4}
           distanceThreshold={1.0}
           distanceFalloff={0.0}
@@ -483,6 +497,7 @@ export const Scene = ({
           bias={0.5}
         />
       </EffectComposer>
+      {/* <Floor /> */}
     </Canvas>
   )
 }
