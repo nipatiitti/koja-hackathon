@@ -3,7 +3,7 @@ import { Canvas } from '@react-three/fiber'
 import { EffectComposer, SSAO } from '@react-three/postprocessing'
 import { BlendFunction } from 'postprocessing'
 import { useEffect, useRef, useState } from 'react'
-import { BufferGeometry, Color, Group } from 'three'
+import { BufferGeometry, Group } from 'three'
 import { STLLoader } from 'three-stdlib'
 import { Grid } from '../threejs/Grid'
 import { ServerRackType } from '../types'
@@ -20,15 +20,6 @@ interface ModelInfo {
   materials: ('plastic' | 'metal')[]
   lines: unknown[]
   spheres: unknown[]
-}
-
-const Skybox = () => {
-  return (
-    <mesh>
-      <boxGeometry args={[1000, 1000, 1000]} />
-      <meshBasicMaterial color={new Color(0x87ceeb)} side={1} />
-    </mesh>
-  )
 }
 
 const getModels = async (modelInfo: ModelInfo) => {
@@ -89,7 +80,6 @@ export const Scene = ({ serverRacks }: { serverRacks: ServerRackType[] }) => {
           maxDistance={10}
           target={[0, 1, 0]}
         />
-        <Skybox />
         <Grid />
         <ambientLight intensity={2} />
         <pointLight position={[10, 10, 10]} intensity={2} />
