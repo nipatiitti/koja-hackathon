@@ -138,6 +138,7 @@ const ModelViewer = ({
 const Enclosure = ({ serverRack }: { serverRack: ServerRackType }) => {
   const [geometries, setGeometries] = useState<BufferGeometry[]>([])
   const [loading, setLoading] = useState(true)
+  const [materials, setMaterials] = useState<string[]>([])
 
   useEffect(() => {
     const loadModels = async () => {
@@ -150,7 +151,7 @@ const Enclosure = ({ serverRack }: { serverRack: ServerRackType }) => {
         setLoading(false)
         return
       }
-
+      setMaterials(modelInfo.materials)
       const modelBuffers = await Promise.all(await getModels(modelInfo))
       const loader = new STLLoader()
       const loadedGeometries = modelBuffers.map((buffer) => loader.parse(buffer))
@@ -159,6 +160,8 @@ const Enclosure = ({ serverRack }: { serverRack: ServerRackType }) => {
     }
     loadModels()
   }, [serverRack.serverAmount])
+
+  // The enclosure is made from 28 stl files
 
   return (
     <>
@@ -171,18 +174,60 @@ const Enclosure = ({ serverRack }: { serverRack: ServerRackType }) => {
       ) : (
         // Render actual models
         geometries.map((geometry, index) => (
-          <mesh
+          <EnclosureMaterial
             key={index}
+            serverRack={serverRack}
             geometry={geometry}
-            scale={0.001}
-            rotation={[Math.PI / 2, 0, 0]}
-            position={[0, 0, 0.0875 * serverRack.serverAmount]}
-          >
-            <meshStandardMaterial color={0xaaaaaa} metalness={0.8} roughness={0.8} envMapIntensity={1.0} />
-          </mesh>
+            index={index}
+            material={materials[index] || 'plastic'}
+          />
         ))
       )}
     </>
+  )
+}
+
+export const EnclosureMaterial = ({
+  serverRack,
+  geometry,
+  material,
+  index,
+}: {
+  serverRack: ServerRackType
+  geometry: BufferGeometry
+  material: string
+  index?: number
+}) => {
+  const glassIndexes = [20, 21, 22, 23, 24, 25, 26, 27]
+  console.log(index)
+
+  return (
+    <mesh
+      geometry={geometry}
+      scale={0.001}
+      rotation={[Math.PI / 2, 0, 0]}
+      position={[0, 0, 0.0875 * serverRack.serverAmount]}
+    >
+      {glassIndexes.includes(index || 0) ? (
+        <meshPhysicalMaterial
+          color={0x111111}
+          metalness={0.9}
+          roughness={0.1}
+          transmission={1}
+          thickness={0.1}
+          ior={1.5}
+          envMapIntensity={1.0}
+          clearcoat={1}
+          clearcoatRoughness={0.1}
+          opacity={0.5}
+          transparent={true}
+          depthWrite={false}
+          depthTest={true}
+        />
+      ) : (
+        <meshStandardMaterial color={material === 'plastic' ? 0x111111 : 0xbacaff} metalness={0.9} roughness={0.1} />
+      )}
+    </mesh>
   )
 }
 
