@@ -1,9 +1,9 @@
+import { useAtom } from 'jotai'
+import toast from 'react-hot-toast'
 import { FaPlus } from 'react-icons/fa'
+import { achievementsAtom } from '../helper'
 import { ServerRackType } from '../types'
 import ServerRack from './ServerRack'
-import { useAtom } from 'jotai'
-import { achievementsAtom } from '../helper'
-import toast from 'react-hot-toast'
 
 interface Props {
   serverRacks: ServerRackType[]
@@ -17,7 +17,7 @@ const RackConfig = ({ serverRacks, setServerRacks }: Props) => {
 
   const addServerRack = () => {
     setServerRacks((prevRacks) => {
-      console.log([prevRacks.length * 1.4, 0, 0])
+      console.log([prevRacks.length * 1.5, 0, 0])
       return [
         ...prevRacks,
         {
@@ -26,7 +26,7 @@ const RackConfig = ({ serverRacks, setServerRacks }: Props) => {
           serverWattage: 500,
           name: 'Server Rack ' + (prevRacks.length + 1),
           highlighted: false,
-          location: [prevRacks.length * 1.4, 0, 0],
+          location: [prevRacks.length * 1.5, 0, 0],
         },
       ]
     })
