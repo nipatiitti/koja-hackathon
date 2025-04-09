@@ -388,9 +388,9 @@ export const Scene = ({
       <OrbitControls minDistance={1} maxDistance={10} target={[0, 1, 0]} ref={orbit} />
       <Grid />
       <ambientLight intensity={2} />
-      <pointLight position={[10, 10, 10]} intensity={2} />
-      <pointLight position={[-10, -10, -10]} intensity={2} />
-      <directionalLight position={[0, 5, 0]} intensity={2} />
+      <pointLight position={[10, 10, 10]} intensity={5} />
+      <pointLight position={[-10, -10, -10]} intensity={5} />
+      <directionalLight position={[0, 5, 0]} intensity={5} />
       {serverRacks.map((serverRack, index) => (
         <ModelViewer
           key={serverRack.id}
