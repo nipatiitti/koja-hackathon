@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react'
-import { ServerRackType } from '../types'
 import { IoCloseCircleOutline } from 'react-icons/io5'
+import { ServerRackType } from '../types'
 
 interface Props {
-  id: number
+  id: string
   serverAmount: number
   setServerRacks: React.Dispatch<React.SetStateAction<ServerRackType[]>>
   serverRacks: ServerRackType[]

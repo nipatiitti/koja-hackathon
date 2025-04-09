@@ -1,5 +1,5 @@
 export interface ServerRackType {
-  id: number
+  id: string
   serverAmount: number
   name: string
 }

@@ -94,7 +94,7 @@ const ModelViewer = ({
 }
 
 export const Scene = ({ serverRacks }: { serverRacks: ServerRackType[] }) => {
-  const [transformingModelId, setTransformingModelId] = useState<number | null>(null)
+  const [transformingModelId, setTransformingModelId] = useState<string | null>(null)
 
   return (
     <div className="w-full h-full">

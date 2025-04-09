@@ -17,45 +17,25 @@ export const Grid: FC = () => {
 
   useEffect(() => {
     if (!scene) return
-
-    // const grid = new ThreeInfiniteGrid({
-    //   chunks: new Vector2(100, 100), //2000x2000 units size
-    //   plane: PLANE.XZ,
-    //   scale: 1,
-    //   majorGridFactor: 10,
-    //   minorLineWidth: 0.01,
-    //   majorLineWidth: 0.015,
-    //   axisLineWidth: 0.05,
-    //   minorLineColor: new Color('#000000'),
-    //   majorLineColor: new Color('#000000'),
-    //   xAxisColor: new Color('#ff0000'),
-    //   yAxisColor: new Color('#00ff00'),
-    //   zAxisColor: new Color('#0000ff'),
-    //   centerColor: new Color('#ffff00'),
-    //   opacity: 1,
-    // })
-
-    // console.log('grid', grid)
-    // scene.add(grid)
   }, [scene])
 
   return (
     <threeInfiniteGrid
       args={[
         {
-          chunks: new Vector2(100, 100), //2000x2000 units size
+          chunks: new Vector2(1000, 1000),
           plane: PLANE.XZ,
-          scale: 1,
-          majorGridFactor: 1,
-          minorLineWidth: 0.01,
-          majorLineWidth: 0.015,
-          axisLineWidth: 0.05,
-          minorLineColor: new Color('#000000'),
-          majorLineColor: new Color('#000000'),
-          xAxisColor: new Color('#ff0000'),
-          yAxisColor: new Color('#00ff00'),
-          zAxisColor: new Color('#0000ff'),
-          centerColor: new Color('#ffff00'),
+          scale: 0.5,
+          majorGridFactor: 5,
+          minorLineWidth: 0.001,
+          majorLineWidth: 0.04,
+          axisLineWidth: 0.04,
+          minorLineColor: new Color('#fffdf8'),
+          majorLineColor: new Color('#3f84f3'),
+          xAxisColor: new Color('#3f84f3'),
+          yAxisColor: new Color('#3f84f3'),
+          zAxisColor: new Color('#3f84f3'),
+          centerColor: new Color('#3f84f3'),
           opacity: 1,
         },
       ]}
