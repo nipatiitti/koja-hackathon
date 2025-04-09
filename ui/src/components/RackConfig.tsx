@@ -31,10 +31,7 @@ const RackConfig = ({ serverRacks, setServerRacks }: Props) => {
       <form className="w-full max-w-md p-6 bg-white rounded shadow-md" onSubmit={handleSubmit}>
         <h2 className="text-2xl font-bold mb-4 text-gray-800">Server Rack Config</h2>
         <div className="mb-4">
-          <label htmlFor="name" className="block text-sm font-medium text-gray-700">
-            Name
-          </label>
-          <div>
+          <div className="flex flex-col gap-4">
             {serverRacks.map((rack, index) => (
               <ServerRack
                 key={index}
