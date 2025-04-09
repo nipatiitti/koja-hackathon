@@ -150,7 +150,7 @@ def server_rack_enclosure(servers: int = None):
     body = create_server_rack(servers)
     
     # Create the enclosure
-    enclosure_body = {"width":server_depth,"depth":175 * servers, "height":server_width + 200,"visualize":False,"panelXPos":False,"panelXNeg":False,"panelYPos":True,"panelYNeg":True,"panelZPos":True,"panelZNeg":True}
+    enclosure_body = {"width":server_depth,"depth":170 * servers + 80, "height":server_width + 200,"visualize":False,"panelXPos":False,"panelXNeg":False,"panelYPos":True,"panelYNeg":True,"panelZPos":True,"panelZNeg":True}
 
     # Check if the request body is already in the cache
     if "enclosure" + str(enclosure_body) in request_cache:
