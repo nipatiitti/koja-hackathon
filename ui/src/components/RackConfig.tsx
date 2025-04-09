@@ -18,7 +18,7 @@ const RackConfig = ({ serverRacks, setServerRacks }: Props) => {
     setServerRacks((prevRacks) => [
       ...prevRacks,
       {
-        id: prevRacks.length + 1,
+        id: Math.floor(Math.random() * 1000),
         serverAmount: 0,
         name: 'Server Rack ' + (prevRacks.length + 1),
       },
