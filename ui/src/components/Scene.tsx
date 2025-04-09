@@ -108,7 +108,7 @@ const ModelViewer = ({
     <TransformControls
       mode="translate"
       position={serverRack.location || defaultPosition}
-      translationSnap={1.4}
+      translationSnap={1.5}
       rotationSnap={Math.PI / 2}
       ref={transform}
       onUpdate={handleTransformChange}
@@ -135,9 +135,61 @@ const ModelViewer = ({
             </mesh>
           ))
         )}
+        <Enclosure serverRack={serverRack} />
+        {/* <AirConditioner /> */}
       </group>
-      <AirConditioner />
     </TransformControls>
+  )
+}
+
+const Enclosure = ({ serverRack }: { serverRack: ServerRackType }) => {
+  const [geometries, setGeometries] = useState<BufferGeometry[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const loadModels = async () => {
+      setLoading(true)
+      const response = await fetch(`${API_URL}/server-rack-enclosure?servers=${serverRack.serverAmount}`)
+      const modelInfo = await response.json()
+
+      if (modelInfo.error || !modelInfo.models) {
+        console.error(modelInfo.error)
+        setLoading(false)
+        return
+      }
+
+      const modelBuffers = await Promise.all(await getModels(modelInfo))
+      const loader = new STLLoader()
+      const loadedGeometries = modelBuffers.map((buffer) => loader.parse(buffer))
+      setGeometries(loadedGeometries)
+      setLoading(false)
+    }
+    loadModels()
+  }, [serverRack.serverAmount])
+
+  return (
+    <>
+      {loading ? (
+        // Placeholder while loading
+        <mesh>
+          <boxGeometry args={[1, 1, 1]} />
+          <meshStandardMaterial color={0x0000ff} wireframe={true} opacity={0.5} transparent={true} />
+        </mesh>
+      ) : (
+        // Render actual models
+        geometries.map((geometry, index) => (
+          <mesh
+            key={index}
+            geometry={geometry}
+            scale={0.001}
+            rotation={[Math.PI / 2, 0, 0]}
+            position={[0, 0, 0.0875 * serverRack.serverAmount]}
+          >
+            <meshStandardMaterial color={0xaaaaaa} metalness={0.8} roughness={0.8} envMapIntensity={1.0} />
+          </mesh>
+        ))
+      )}
+    </>
   )
 }
 
@@ -260,7 +312,7 @@ export const Scene = ({ serverRacks }: { serverRacks: ServerRackType[] }) => {
         <ModelViewer
           key={serverRack.id}
           serverRack={serverRack}
-          defaultPosition={[index * 1.4, 0, 0]}
+          defaultPosition={[index * 1.5, 0, 0]}
           setOrbit={setOrbit}
         />
       ))}

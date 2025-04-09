@@ -39,7 +39,7 @@ def save_cache():
         json.dump(request_cache, f)
 
 server_depth = 1067 # mm
-server_width = 1270 # cm
+server_width = 1270 # mm
 server_height = 5 # cm
 
 """
@@ -137,7 +137,60 @@ def server_rack(servers: int = None):
         
         # Return an error message
         return {"error": "Failed to create server rack", "status_code": response.status_code}
+
+@app.get("/server-rack-enclosure")
+def server_rack_enclosure(servers: int = None):
+    # Atleast 3 servers
+    if servers is None:
+        servers = 3
+    if servers < 3:
+        return {"error": "Atleast 3 servers are required"}
     
+    # Create the server rack
+    body = create_server_rack(servers)
+    
+    # Create the enclosure
+    enclosure_body = {"width":server_depth,"depth":175 * servers, "height":server_width + 200,"visualize":False,"panelXPos":False,"panelXNeg":False,"panelYPos":True,"panelYNeg":True,"panelZPos":True,"panelZNeg":True}
+
+    # Check if the request body is already in the cache
+    if "enclosure" + str(enclosure_body) in request_cache:
+        # Return the cached response
+        return request_cache["enclosure" + str(enclosure_body)]
+
+    # Send request to Koja CAD API
+    print(enclosure_body)
+    response = requests.post(
+        f"{cad_address}/products/module/model?format=stl",
+        headers={
+            "Content-Type": "application/json",
+            "Accept": "*/*"
+        },
+        json=enclosure_body
+    )
+
+    # Check if the request was successful
+    if response.status_code == 200:
+        json = response.json()
+
+        # Cache the response
+        request_cache["enclosure" + str(enclosure_body)] = json
+        save_cache()  # Save cache after updating
+
+        id = json.get("id")
+        models = json.get("models")
+
+        # Save the files to models/:id/:file
+        save_files(id, models)
+
+        # Return the response
+        return json
+    
+    else:
+        # Print the error message
+        print(f"Error: {response.status_code} - {response.text}")
+        
+        # Return an error message
+        return {"error": "Failed to create server rack enclosure", "status_code": response.status_code}
 
 # Fetch the stl asset for a model based on id
 @app.get("/models/{id}/{file}")
