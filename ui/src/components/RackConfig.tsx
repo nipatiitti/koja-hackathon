@@ -3,6 +3,7 @@ import { ServerRackType } from '../types'
 import ServerRack from './ServerRack'
 import { useAtom } from 'jotai'
 import { achievementsAtom } from '../helper'
+import toast from 'react-hot-toast'
 
 interface Props {
   serverRacks: ServerRackType[]
@@ -12,7 +13,7 @@ interface Props {
 const genId = () => Math.random().toString(36).substring(2, 9)
 
 const RackConfig = ({ serverRacks, setServerRacks }: Props) => {
-  const [completedAchievements, setCompletedAchievements] = useAtom(achievementsAtom)
+  const [achievements, setAchievements] = useAtom(achievementsAtom)
 
   const addServerRack = () => {
     setServerRacks((prevRacks) => {
@@ -30,8 +31,11 @@ const RackConfig = ({ serverRacks, setServerRacks }: Props) => {
       ]
     })
     console.log(serverRacks)
-    if (!completedAchievements.includes('rack-added')) {
-      setCompletedAchievements((prev) => [...prev, 'rack-added'])
+
+    if (!achievements.includes('rack-added')) {
+      setAchievements((prev) => [...prev, 'rack-added'])
+      localStorage.setItem('accomplishedAchievements', JSON.stringify([...achievements, 'rack-added']))
+      toast.success(`Achievement unlocked: added your first server rack!`)
     }
   }
 

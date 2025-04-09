@@ -4,14 +4,18 @@ import { BrowserRouter, Route, Routes } from 'react-router'
 import './index.css'
 import App from './routes/App.tsx'
 import Instructions from './routes/Instructions.tsx'
+import { Toaster } from 'react-hot-toast'
 
 createRoot(document.getElementById('root')!).render(
-  <BrowserRouter>
-    <StrictMode>
-      <Routes>
-        <Route path="/" element={<App />} />
-        <Route path="/about" element={<Instructions />} />
-      </Routes>
-    </StrictMode>
-  </BrowserRouter>,
+  <>
+    <Toaster />
+    <BrowserRouter>
+      <StrictMode>
+        <Routes>
+          <Route path="/" element={<App />} />
+          <Route path="/about" element={<Instructions />} />
+        </Routes>
+      </StrictMode>
+    </BrowserRouter>
+  </>,
 )
