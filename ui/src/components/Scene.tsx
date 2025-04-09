@@ -199,7 +199,6 @@ export const EnclosureMaterial = ({
   index?: number
 }) => {
   const glassIndexes = [20, 21, 22, 23, 24, 25, 26, 27]
-  console.log(index)
 
   return (
     <mesh
