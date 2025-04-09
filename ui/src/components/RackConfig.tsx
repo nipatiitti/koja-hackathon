@@ -20,7 +20,7 @@ const RackConfig = ({ serverRacks, setServerRacks }: Props) => {
       {
         id: prevRacks.length + 1,
         serverAmount: 0,
-        name: '',
+        name: 'Server Rack ' + (prevRacks.length + 1),
       },
     ])
     console.log(serverRacks)
