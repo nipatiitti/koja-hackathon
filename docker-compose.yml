@@ -1,0 +1,24 @@
+services:
+  api:
+    image: cad.koja.fi/api:latest
+    container_name: kojacad_api
+    restart: always
+    volumes:
+      - api_socket:/var/run/kojacad
+      - type: tmpfs
+        target: /tmp
+
+  webcad:
+    image: cad.koja.fi/webcad:latest
+    container_name: kojawebcad
+    restart: always
+    volumes:
+      - api_socket:/var/run/kojacad
+    depends_on:
+      - api
+    ports:
+      - "127.0.0.1:8080:80"
+
+volumes:
+  api_socket:
+    driver: local
