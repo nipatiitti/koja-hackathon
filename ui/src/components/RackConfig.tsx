@@ -1,7 +1,6 @@
-import { useState } from 'react'
+import { FaPlus } from 'react-icons/fa'
 import { ServerRackType } from '../types'
 import ServerRack from './ServerRack'
-import { FaPlus } from 'react-icons/fa'
 
 interface Props {
   serverRacks: ServerRackType[]
@@ -9,12 +8,6 @@ interface Props {
 }
 
 const RackConfig = ({ serverRacks, setServerRacks }: Props) => {
-  const [name, setName] = useState('')
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    console.log('asd:', serverRacks)
-  }
   const addServerRack = () => {
     setServerRacks((prevRacks) => [
       ...prevRacks,
