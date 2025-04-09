@@ -39,3 +39,11 @@
 
   --color-secondary: #fffdf8;
 }
+
+/* Buttons to cursor pointer */
+button,
+input[type='button'],
+input[type='reset'],
+input[type='submit'] {
+  cursor: pointer;
+}
