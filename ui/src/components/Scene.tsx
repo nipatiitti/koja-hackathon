@@ -22,7 +22,7 @@ interface ModelInfo {
   spheres: unknown[]
 }
 
-const getModels = async (modelInfo: ModelInfo) => {
+const getModels = (modelInfo: ModelInfo) => {
   return modelInfo.models.map(async (model) => {
     const response = await fetch(`${API_URL}/models/${modelInfo.id}/${model}`)
     return await response.arrayBuffer()
@@ -42,15 +42,18 @@ const ModelViewer = ({
 }) => {
   const [modelInfo, setModelInfo] = useState<ModelInfo | null>(null)
   const [geometries, setGeometries] = useState<BufferGeometry[]>([])
+  const [loading, setLoading] = useState(true)
   const groupRef = useRef<Group>(null)
 
   useEffect(() => {
     const loadModels = async () => {
+      setLoading(true)
       const response = await fetch(`${API_URL}/server-rack?servers=${serverRack.serverAmount}`)
       const modelInfo = await response.json()
 
       if (modelInfo.error || !modelInfo.models) {
         console.error(modelInfo.error)
+        setLoading(false)
         return
       }
 
@@ -60,13 +63,10 @@ const ModelViewer = ({
       const loader = new STLLoader()
       const loadedGeometries = modelBuffers.map((buffer) => loader.parse(buffer))
       setGeometries(loadedGeometries)
+      setLoading(false)
     }
     loadModels()
   }, [serverRack])
-
-  if (geometries.length === 0) {
-    return null
-  }
 
   return (
     <TransformControls
@@ -78,18 +78,73 @@ const ModelViewer = ({
       rotationSnap={Math.PI / 2}
     >
       <group ref={groupRef} rotation={[-Math.PI / 2, 0, Math.PI / 2]}>
-        {geometries.map((geometry, index) => (
-          <mesh key={index} geometry={geometry} scale={0.001}>
-            <meshStandardMaterial
-              color={modelInfo?.materials[index] === 'plastic' ? 0x111111 : 0xffffff}
-              metalness={modelInfo?.materials[index] === 'plastic' ? 0.2 : 0.8}
-              roughness={modelInfo?.materials[index] === 'plastic' ? 0.8 : 0.05}
-              envMapIntensity={modelInfo?.materials[index] === 'plastic' ? 0.5 : 1.5}
-            />
+        {loading ? (
+          // Skeleton loading box while models are loading
+          <mesh position={[0, 0, 0.09 * serverRack.serverAmount]}>
+            <boxGeometry args={[1.1, 1.4, 0.18 * serverRack.serverAmount]} />
+            <meshStandardMaterial color={0x000} wireframe={true} opacity={0.5} transparent={true} />
           </mesh>
-        ))}
+        ) : (
+          // Actual models once loaded
+          geometries.map((geometry, index) => (
+            <mesh key={index} geometry={geometry} scale={0.001}>
+              <meshStandardMaterial
+                color={modelInfo?.materials[index] === 'plastic' ? 0x111111 : 0xffffff}
+                metalness={modelInfo?.materials[index] === 'plastic' ? 0.2 : 0.8}
+                roughness={modelInfo?.materials[index] === 'plastic' ? 0.8 : 0.05}
+                envMapIntensity={modelInfo?.materials[index] === 'plastic' ? 0.5 : 1.5}
+              />
+            </mesh>
+          ))
+        )}
       </group>
     </TransformControls>
+  )
+}
+const AirConditioner = () => {
+  const [modelInfos, setModelInfos] = useState<ModelInfo[]>([])
+  const [geometries, setGeometries] = useState<BufferGeometry[]>([])
+  const [loading, setLoading] = useState(true)
+  const groupRef = useRef<Group>(null)
+
+  useEffect(() => {
+    const loadAirConditioner = async () => {
+      try {
+        setLoading(true)
+        const response = await fetch(`${API_URL}/koja/air_conditioner`)
+        const mfs = (await response.json()) as ModelInfo[]
+        setModelInfos(mfs)
+
+        const modelBuffers = await Promise.all(mfs.flatMap((modelInfo) => getModels(modelInfo)))
+        const loader = new STLLoader()
+        const loadedGeometries = modelBuffers.map((buffer) => loader.parse(buffer))
+        setGeometries(loadedGeometries)
+      } catch (error) {
+        console.error('Failed to load air conditioner:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+    loadAirConditioner()
+  }, [])
+
+  return (
+    <group ref={groupRef} position={[2, 0, 0]} rotation={[-Math.PI / 2, 0, 0]} scale={[0.5, 0.5, 0.5]}>
+      {loading ? (
+        // Placeholder while loading
+        <mesh>
+          <boxGeometry args={[1, 1, 1]} />
+          <meshStandardMaterial color={0x0000ff} wireframe={true} opacity={0.5} transparent={true} />
+        </mesh>
+      ) : (
+        // Render actual models
+        geometries.map((geometry, index) => (
+          <mesh key={index} geometry={geometry} scale={0.001}>
+            <meshStandardMaterial color={0x999999} metalness={0.8} roughness={0.2} envMapIntensity={1.0} />
+          </mesh>
+        ))
+      )}
+    </group>
   )
 }
 
@@ -121,6 +176,7 @@ export const Scene = ({ serverRacks }: { serverRacks: ServerRackType[] }) => {
             onTransformEnd={() => setTransformingModelId(null)}
           />
         ))}
+        <AirConditioner />
         <EffectComposer enableNormalPass>
           <SSAO
             blendFunction={BlendFunction.MULTIPLY}
