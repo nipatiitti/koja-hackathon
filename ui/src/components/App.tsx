@@ -6,9 +6,11 @@ const App = () => {
   const [serverRacks, setServerRacks] = useState<{ id: number; serverAmount: number }[]>([])
 
   return (
-    <div className="grid grid-cols-2 gap-4 justify-center items-center">
-      <Scene />
-      <div>
+    <div className="flex">
+      <div className="flex-[1]">
+        <Scene />
+      </div>
+      <div className="max-w-2xl min-w-fit">
         <RackConfig serverRacks={serverRacks} setServerRacks={setServerRacks} />
       </div>
     </div>

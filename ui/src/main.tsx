@@ -8,7 +8,7 @@ import './index.css'
 createRoot(document.getElementById('root')!).render(
   <BrowserRouter>
     <StrictMode>
-      <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
+      <div className="min-h-screen bg-gray-100">
         <Routes>
           <Route path="/" element={<App />} />
           <Route path="/about" element={<Instructions />} />
