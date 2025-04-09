@@ -231,7 +231,7 @@ export const Scene = ({ serverRacks }: { serverRacks: ServerRackType[] }) => {
         <EffectComposer enableNormalPass>
           <SSAO
             blendFunction={BlendFunction.MULTIPLY}
-            samples={30}
+            samples={1}
             rings={4}
             distanceThreshold={1.0}
             distanceFalloff={0.0}
