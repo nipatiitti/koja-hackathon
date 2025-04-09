@@ -2,6 +2,7 @@ import { useState } from 'react'
 import RackConfig from '../components/RackConfig'
 import { Scene } from '../components/Scene'
 import { ServerRackType } from '../types'
+import Instructions from './Instructions'
 
 const App = () => {
   const [serverRacks, setServerRacks] = useState<ServerRackType[]>([])
@@ -11,6 +12,7 @@ const App = () => {
       <div className="flex-[1]">
         <Scene serverRacks={serverRacks} />
       </div>
+      <Instructions />
       <div className="absolute top-0 right-0 h-screen overflow-x-auto">
         <RackConfig serverRacks={serverRacks} setServerRacks={setServerRacks} />
       </div>
