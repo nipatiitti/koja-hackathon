@@ -8,7 +8,7 @@ const App = () => {
   const [serverRacks, setServerRacks] = useState<ServerRackType[]>([])
 
   return (
-    <div className="flex flex-col md:flex-row min-h-screen max-h-screen bg-background-100">
+    <div className="flex flex-col md:flex-row min-h-screen max-h-screen bg-linear-to-b bg-linear-65 to-secondary from-background-100">
       <div className="flex-1 flex flex-col h-[67vh] md:h-auto">
         <Scene serverRacks={serverRacks} />
       </div>

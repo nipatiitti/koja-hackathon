@@ -30,7 +30,7 @@ export const Grid: FC = () => {
           minorLineWidth: 0.001,
           majorLineWidth: 0.04,
           axisLineWidth: 0.04,
-          minorLineColor: new Color('#fffdf8'),
+          minorLineColor: new Color('#9aa1a7'),
           majorLineColor: new Color('#3f84f3'),
           xAxisColor: new Color('#3f84f3'),
           yAxisColor: new Color('#3f84f3'),
