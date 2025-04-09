@@ -19,91 +19,22 @@ cad_address = "https://cad.koja.fi/api/v1"
 server_rack_product = "blockCoil"
 
 model_directory = "models"
+cache_file = "request_cache.json"
+
 # Create the directory if it doesn't exist
 if not os.path.exists(model_directory):
     os.makedirs(model_directory)
 
-# Cache that is request body => Koja CAD API response
-# This is used to avoid sending the same request multiple times
-# and to speed up the response time
-request_cache = {}
+# Load cache from file if it exists
+if os.path.exists(cache_file):
+    with open(cache_file, 'r') as f:
+        request_cache = json.load(f)
+else:
+    request_cache = {}
 
-"""
-Example request:
-curl 'https://cad.koja.fi/api/v1/products/blockCoil/model?format=stl' \
-  -H 'Accept: */*' \
-  -H 'Accept-Language: fi-FI,fi;q=0.9,en-US;q=0.8,en;q=0.7' \
-  -H 'Connection: keep-alive' \
-  -H 'Origin: https://cad.koja.fi' \
-  -H 'Referer: https://cad.koja.fi/' \
-  -H 'Sec-Fetch-Dest: empty' \
-  -H 'Sec-Fetch-Mode: cors' \
-  -H 'Sec-Fetch-Site: same-origin' \
-  -H 'User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36' \
-  -H 'content-type: application/json' \
-  -H 'sec-ch-ua: "Google Chrome";v="135", "Not-A.Brand";v="8", "Chromium";v="135"' \
-  -H 'sec-ch-ua-mobile: ?0' \
-  -H 'sec-ch-ua-platform: "Linux"' \
-  --data-raw '{"orientation":"R","face_width":1780,"inst_depth":380,"n_rows":10,"tube_pitch_x":28.84,"tube_pitch_y":33.3,"plate_thickness":1.5,"inst_tolerance":1,"n_transverse_rows":[10,10,10]}'
-
-    
-  Body json:
-{
-    "orientation": "R",
-    "face_width": 1780,
-    "inst_depth": 380,
-    "n_rows": 10,
-    "tube_pitch_x": 28.84,
-    "tube_pitch_y": 33.3,
-    "plate_thickness": 1.5,
-    "inst_tolerance": 1,
-    "n_transverse_rows": [10, 10, 10] # Each number is the height of a server in the rack
-}
-
-
-Response:
-{
-    "id": "5b2f7f18-7b8b-422f-aa0a-e5dd59095158",
-    "models": [
-        "model_1.stl",
-        "model_2.stl",
-        "model_3.stl",
-        "model_4.stl",
-        "model_5.stl",
-        "model_6.stl",
-        "model_7.stl",
-        "model_8.stl",
-        "model_9.stl",
-        "model_10.stl",
-        "model_11.stl",
-        "model_12.stl"
-    ],
-    "min": [
-        -5333.5,
-        -2473.0,
-        -1.5
-    ],
-    "max": [
-        5333.5,
-        2473.0,
-        1006.5
-    ],
-    "center": [
-        0.0,
-        0.0,
-        502.5
-    ],
-    "size": [
-        10667.0,
-        4946.0,
-        1008.0
-    ],
-    "materials": [],
-    "lines": [],
-    "spheres": []
-}
-
-"""
+def save_cache():
+    with open(cache_file, 'w') as f:
+        json.dump(request_cache, f)
 
 server_depth = 1067 # mm
 server_width = 1270 # cm
@@ -188,6 +119,7 @@ def server_rack(servers: int = None):
 
         # Cache the response
         request_cache[str(body)] = json
+        save_cache()  # Save cache after updating
 
         id = json.get("id")
         models = json.get("models")
@@ -196,7 +128,6 @@ def server_rack(servers: int = None):
         save_files(id, models)
         # Return the response
         return json
-
 
     else:
         # Print the error message

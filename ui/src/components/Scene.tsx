@@ -1,9 +1,11 @@
-import { Canvas, useFrame } from '@react-three/fiber'
+import { Canvas } from '@react-three/fiber'
 import { EffectComposer, SSAO } from '@react-three/postprocessing'
 import { BlendFunction } from 'postprocessing'
 import { useEffect, useRef, useState } from 'react'
 import { BufferGeometry, Color, Group } from 'three'
 import { STLLoader } from 'three-stdlib'
+
+const API_URL = 'http://localhost:8000'
 
 interface ModelInfo {
   id: string
@@ -28,7 +30,7 @@ const Skybox = () => {
 
 const getModels = async (modelInfo: ModelInfo) => {
   return modelInfo.models.map(async (model) => {
-    const response = await fetch(`https://cad.koja.fi/api/v1/model/${modelInfo.id}/${model}`)
+    const response = await fetch(`${API_URL}/models/${modelInfo.id}/${model}`)
     return await response.arrayBuffer()
   })
 }
@@ -47,25 +49,19 @@ const ModelViewer = ({ modelInfo }: { modelInfo: ModelInfo }) => {
     loadModels()
   }, [modelInfo])
 
-  useFrame((state, delta) => {
-    if (groupRef.current) {
-      groupRef.current.rotation.y += delta * 0.5
-    }
-  })
-
   if (geometries.length === 0) {
     return null
   }
 
   return (
-    <group ref={groupRef}>
+    <group ref={groupRef} rotation={[Math.PI / 2, Math.PI / 2, 0]}>
       {geometries.map((geometry, index) => (
         <mesh key={index} geometry={geometry} scale={0.001}>
           <meshStandardMaterial
-            color={modelInfo.materials[index] === 'metal' ? 0xffffff : 0x111111}
-            metalness={modelInfo.materials[index] === 'metal' ? 0.8 : 0.2}
-            roughness={modelInfo.materials[index] === 'metal' ? 0.05 : 0.8}
-            envMapIntensity={modelInfo.materials[index] === 'metal' ? 1.5 : 0.5}
+            color={modelInfo.materials[index] === 'plastic' ? 0x111111 : 0xffffff}
+            metalness={modelInfo.materials[index] === 'plastic' ? 0.2 : 0.8}
+            roughness={modelInfo.materials[index] === 'plastic' ? 0.8 : 0.05}
+            envMapIntensity={modelInfo.materials[index] === 'plastic' ? 0.5 : 1.5}
           />
         </mesh>
       ))}
@@ -78,24 +74,7 @@ export const Scene = () => {
 
   useEffect(() => {
     const fetchModelInfo = async () => {
-      const response = await fetch('https://cad.koja.fi/api/v1/products/module/model?format=stl', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          width: 1000,
-          depth: 1000,
-          height: 1000,
-          visualize: false,
-          panelXPos: false,
-          panelXNeg: false,
-          panelYPos: true,
-          panelYNeg: true,
-          panelZPos: true,
-          panelZNeg: true,
-        }),
-      })
+      const response = await fetch(`${API_URL}/server-rack?servers=10`)
       const data = await response.json()
       console.log(data)
       setModelInfo(data)
@@ -106,7 +85,7 @@ export const Scene = () => {
 
   return (
     <div className="w-full h-full">
-      <Canvas camera={{ position: [0, 0, 1.5], fov: 80 }}>
+      <Canvas camera={{ position: [0, 0, 3], fov: 80 }}>
         <Skybox />
         <ambientLight intensity={2} />
         <pointLight position={[10, 10, 10]} intensity={2} />
