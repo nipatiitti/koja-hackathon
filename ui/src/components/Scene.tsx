@@ -31,12 +31,12 @@ const getModels = (modelInfo: ModelInfo) => {
 
 const ModelViewer = ({
   serverRack,
-  defaultPosition,
   setOrbit,
+  updatePosition,
 }: {
   serverRack: ServerRackType
-  defaultPosition: [number, number, number]
   setOrbit: (enabled: boolean) => void
+  updatePosition: (position: [number, number, number]) => void
 }) => {
   const [modelInfo, setModelInfo] = useState<ModelInfo | null>(null)
   const [geometries, setGeometries] = useState<BufferGeometry[]>([])
@@ -81,37 +81,30 @@ const ModelViewer = ({
     }
   }, [setOrbit])
 
-  const handleTransformChange = () => {
-    if (groupRef.current && serverRack) {
-      const position = groupRef.current.parent?.position
-      if (position) {
-        serverRack.location = [position.x, position.y, position.z]
-      }
-    }
-  }
+  const setPosition = () => {
+    if (!transform.current) return
 
-  useEffect(() => {
-    const controls = transform.current
-    if (controls) {
-      // Save position when transform ends
-      const onObjectChange = () => handleTransformChange()
-      // @ts-ignore
-      controls.addEventListener('objectChange', onObjectChange)
-      return () => {
-        // @ts-ignore
-        controls.removeEventListener('objectChange', onObjectChange)
-      }
+    const position = transform.current.position.toArray() as [number, number, number]
+    if (
+      (position[0] === serverRack.location[0] &&
+        position[1] === serverRack.location[1] &&
+        position[2] === serverRack.location[2]) ||
+      (position[0] === 0 && position[1] === 0 && position[2] === 0)
+    ) {
+      return
     }
-  }, [serverRack])
+
+    updatePosition(position)
+  }
 
   return (
     <TransformControls
       mode="translate"
-      position={serverRack.location || defaultPosition}
       translationSnap={1.5}
+      position={serverRack.location}
       rotationSnap={Math.PI / 2}
       ref={transform}
-      onUpdate={handleTransformChange}
+      onChange={setPosition}
     >
       <group ref={groupRef} rotation={[-Math.PI / 2, 0, Math.PI / 2]}>
         {loading ? (
@@ -215,8 +208,6 @@ const AirConditioner = () => {
         }
         modelInfos.push(JSON.parse(await response2.json()))
 
-        console.log(modelInfos)
-
         if (!modelInfos || modelInfos.length === 0) {
           throw new Error('No model data received')
         }
@@ -291,13 +282,23 @@ const AirConditioner = () => {
   )
 }
 
-export const Scene = ({ serverRacks }: { serverRacks: ServerRackType[] }) => {
+export const Scene = ({
+  serverRacks,
+  setServerRacks,
+}: {
+  serverRacks: ServerRackType[]
+  setServerRacks: React.Dispatch<React.SetStateAction<ServerRackType[]>>
+}) => {
   const orbit = useRef<IOrbitControls>(null)
 
   const setOrbit = (enabled: boolean) => {
     if (orbit.current) {
       orbit.current.enabled = enabled
     }
+  }
+
+  const updateServerRackPosition = (id: string, position: [number, number, number]) => {
+    setServerRacks((prevRacks) => prevRacks.map((rack) => (rack.id === id ? { ...rack, location: position } : rack)))
   }
 
   return (
@@ -312,8 +313,8 @@ export const Scene = ({ serverRacks }: { serverRacks: ServerRackType[] }) => {
         <ModelViewer
           key={serverRack.id}
           serverRack={serverRack}
-          defaultPosition={[index * 1.5, 0, 0]}
           setOrbit={setOrbit}
+          updatePosition={(position) => updateServerRackPosition(serverRack.id, position)}
         />
       ))}
       <EffectComposer enableNormalPass>
