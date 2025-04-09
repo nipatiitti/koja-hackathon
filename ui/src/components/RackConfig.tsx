@@ -19,6 +19,7 @@ const RackConfig = ({ serverRacks, setServerRacks }: Props) => {
         serverWattage: 500,
         name: 'Server Rack ' + (prevRacks.length + 1),
         highlighted: false,
+        location: [0, 0, 0],
       },
     ])
     console.log(serverRacks)

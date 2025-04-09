@@ -81,13 +81,35 @@ const ModelViewer = ({
     }
   }, [setOrbit])
 
+  const handleTransformChange = () => {
+    if (groupRef.current && serverRack) {
+      const position = groupRef.current.parent?.position
+      if (position) {
+        serverRack.location = [position.x, position.y, position.z]
+      }
+    }
+  }
+
+  useEffect(() => {
+    const controls = transform.current
+    if (controls) {
+      // Save position when transform ends
+      const onObjectChange = () => handleTransformChange()
+      controls.addEventListener('objectChange', onObjectChange)
+      return () => {
+        controls.removeEventListener('objectChange', onObjectChange)
+      }
+    }
+  }, [serverRack])
+
   return (
     <TransformControls
       mode="translate"
-      position={defaultPosition}
+      position={serverRack.location || defaultPosition}
       translationSnap={1.4}
       rotationSnap={Math.PI / 2}
       ref={transform}
+      onUpdate={handleTransformChange}
     >
       <group ref={groupRef} rotation={[-Math.PI / 2, 0, Math.PI / 2]}>
         {loading ? (

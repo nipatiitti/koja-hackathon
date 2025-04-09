@@ -4,4 +4,5 @@ export interface ServerRackType {
   serverWattage: number
   name: string
   highlighted: boolean
+  location: Array<number>
 }
