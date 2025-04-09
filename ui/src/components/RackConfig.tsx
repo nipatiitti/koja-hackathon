@@ -1,9 +1,18 @@
 import { useState } from 'react'
 import ServerRack from './ServerRack'
 
-const RackConfig = () => {
+interface ServerRackProps {
+  id: number
+  serverAmount: number
+}
+
+interface Props {
+  serverRacks: ServerRackProps[]
+  setServerRacks: React.Dispatch<React.SetStateAction<ServerRackProps[]>>
+}
+
+const RackConfig = ({ serverRacks, setServerRacks }: Props) => {
   const [name, setName] = useState('')
-  const [serverRacks, setServerRacks] = useState<{ id: number; serverAmount: number }[]>([])
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
