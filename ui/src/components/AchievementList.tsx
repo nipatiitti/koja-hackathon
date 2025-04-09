@@ -30,7 +30,7 @@ const AchievementList = () => {
   }
 
   return (
-    <div className="absolute top-3 left-15" onClick={toggleVisible}>
+    <div className="absolute top-3 left-15 cursor-pointer" onClick={toggleVisible}>
       <div
         className={`absolute flex-col text-center text-white bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg shadow-lg transition-all duration-300 ease-in-out ${
           visible ? 'p-6 scale-100 opacity-100' : 'p-3 scale-95 opacity-90'

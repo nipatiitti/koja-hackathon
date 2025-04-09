@@ -10,7 +10,7 @@ const Instructions = () => {
   }
 
   return (
-    <div className="absolute top-3 left-3" onClick={toggleVisible}>
+    <div className="absolute top-3 left-3 cursor-pointer z-100" onClick={toggleVisible}>
       <div
         className={`absolute flex-col text-center text-white bg-gradient-to-br from-green-500 to-blue-800 rounded-lg shadow-lg transition-all duration-300 ease-in-out ${
           visible ? 'p-6 scale-100 opacity-100' : 'p-3 scale-95 opacity-90'
