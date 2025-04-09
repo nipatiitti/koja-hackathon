@@ -13,10 +13,15 @@ const App = () => {
 
   const askAI = async (query: string) => {
     setLoadingAi(true)
-    const response = await promptAi(query, JSON.stringify(serverRacks, null, 2))
-    const newServerRacks = JSON.parse(response)
-    setServerRacks(newServerRacks)
-    setLoadingAi(false)
+    try {
+      const response = await promptAi(query, JSON.stringify(serverRacks, null, 2))
+      const newServerRacks = JSON.parse(response)
+      setServerRacks(newServerRacks)
+    } catch (error) {
+      console.error('Error updating server racks:', error)
+    } finally {
+      setLoadingAi(false)
+    }
   }
 
   return (
