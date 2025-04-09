@@ -8,12 +8,10 @@ import './index.css'
 createRoot(document.getElementById('root')!).render(
   <BrowserRouter>
     <StrictMode>
-      <div className="min-h-screen bg-background-100">
-        <Routes>
-          <Route path="/" element={<App />} />
-          <Route path="/about" element={<Instructions />} />
-        </Routes>
-      </div>
+      <Routes>
+        <Route path="/" element={<App />} />
+        <Route path="/about" element={<Instructions />} />
+      </Routes>
     </StrictMode>
   </BrowserRouter>,
 )

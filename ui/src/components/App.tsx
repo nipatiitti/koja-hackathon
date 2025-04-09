@@ -1,13 +1,13 @@
 import { useState } from 'react'
+import { ServerRackType } from '../types'
 import RackConfig from './RackConfig'
 import { Scene } from './Scene'
-import { ServerRackType } from '../types'
 
 const App = () => {
   const [serverRacks, setServerRacks] = useState<ServerRackType[]>([])
 
   return (
-    <div className="flex">
+    <div className="flex min-h-screen bg-background-100">
       <div className="flex-[1]">
         <Scene />
       </div>
