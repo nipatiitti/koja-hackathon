@@ -47,3 +47,8 @@ input[type='reset'],
 input[type='submit'] {
   cursor: pointer;
 }
+
+.three-container > div {
+  height: auto !important;
+  flex: 1;
+}

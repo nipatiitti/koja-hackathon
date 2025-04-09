@@ -95,8 +95,10 @@ const ModelViewer = ({
     if (controls) {
       // Save position when transform ends
       const onObjectChange = () => handleTransformChange()
+      // @ts-ignore
       controls.addEventListener('objectChange', onObjectChange)
       return () => {
+        // @ts-ignore
         controls.removeEventListener('objectChange', onObjectChange)
       }
     }
@@ -247,37 +249,35 @@ export const Scene = ({ serverRacks }: { serverRacks: ServerRackType[] }) => {
   }
 
   return (
-    <div className="w-full h-full">
-      <Canvas camera={{ position: [0, 2, 3], fov: 80 }}>
-        <OrbitControls minDistance={1} maxDistance={10} target={[0, 1, 0]} ref={orbit} />
-        <Grid />
-        <ambientLight intensity={2} />
-        <pointLight position={[10, 10, 10]} intensity={2} />
-        <pointLight position={[-10, -10, -10]} intensity={2} />
-        <directionalLight position={[0, 5, 0]} intensity={2} />
-        {serverRacks.map((serverRack, index) => (
-          <ModelViewer
-            key={serverRack.id}
-            serverRack={serverRack}
-            defaultPosition={[index * 1.4, 0, 0]}
-            setOrbit={setOrbit}
-          />
-        ))}
-        <EffectComposer enableNormalPass>
-          <SSAO
-            blendFunction={BlendFunction.MULTIPLY}
-            samples={1}
-            rings={4}
-            distanceThreshold={1.0}
-            distanceFalloff={0.0}
-            rangeThreshold={0.5}
-            rangeFalloff={0.1}
-            luminanceInfluence={0.9}
-            radius={20}
-            bias={0.5}
-          />
-        </EffectComposer>
-      </Canvas>
-    </div>
+    <Canvas camera={{ position: [0, 2, 3], fov: 80 }} className="flex-1 flex three-container">
+      <OrbitControls minDistance={1} maxDistance={10} target={[0, 1, 0]} ref={orbit} />
+      <Grid />
+      <ambientLight intensity={2} />
+      <pointLight position={[10, 10, 10]} intensity={2} />
+      <pointLight position={[-10, -10, -10]} intensity={2} />
+      <directionalLight position={[0, 5, 0]} intensity={2} />
+      {serverRacks.map((serverRack, index) => (
+        <ModelViewer
+          key={serverRack.id}
+          serverRack={serverRack}
+          defaultPosition={[index * 1.4, 0, 0]}
+          setOrbit={setOrbit}
+        />
+      ))}
+      <EffectComposer enableNormalPass>
+        <SSAO
+          blendFunction={BlendFunction.MULTIPLY}
+          samples={1}
+          rings={4}
+          distanceThreshold={1.0}
+          distanceFalloff={0.0}
+          rangeThreshold={0.5}
+          rangeFalloff={0.1}
+          luminanceInfluence={0.9}
+          radius={20}
+          bias={0.5}
+        />
+      </EffectComposer>
+    </Canvas>
   )
 }
