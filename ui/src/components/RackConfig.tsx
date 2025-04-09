@@ -1,7 +1,7 @@
 import { useAtom } from 'jotai'
 import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
-import { FaPlus } from 'react-icons/fa'
+import { FaPlus, FaSpinner } from 'react-icons/fa'
 import { achievementsAtom } from '../helper'
 import { ServerRackType } from '../types'
 import ServerRack from './ServerRack'
@@ -9,6 +9,8 @@ import ServerRack from './ServerRack'
 interface Props {
   serverRacks: ServerRackType[]
   setServerRacks: React.Dispatch<React.SetStateAction<ServerRackType[]>>
+  askAI: (query: string) => void
+  loadingAi: boolean
 }
 
 const genId = () => Math.random().toString(36).substring(2, 9)
@@ -55,8 +57,9 @@ const getServerName = () => {
   return names[Math.floor(Math.random() * names.length)]
 }
 
-const RackConfig = ({ serverRacks, setServerRacks }: Props) => {
+const RackConfig = ({ serverRacks, setServerRacks, askAI, loadingAi }: Props) => {
   const [searchQuery, setSearchQuery] = useState('')
+  const [aiQuery, setAiQuery] = useState('')
   const [achievements, setAchievements] = useAtom(achievementsAtom)
 
   useEffect(() => {
@@ -125,13 +128,29 @@ const RackConfig = ({ serverRacks, setServerRacks }: Props) => {
               serverRacks={serverRacks}
             />
           ))}
-          <button
-            onClick={addServerRack}
-            className="flex sticky bottom-4 justify-center items-center w-full px-4 py-2 text-text-950 bg-primary-300 rounded-sm hover:bg-primary-200 focus:outline-none focus:ring-2 focus:ring-primary-200 focus:ring-offset-2"
-          >
-            <FaPlus className="inline mr-2" />
-            Add server rack
-          </button>
+          <div className="sticky bottom-4 flex flex-col gap-4">
+            <button
+              onClick={addServerRack}
+              className="flex justify-center items-center w-full px-4 py-2 text-text-950 bg-primary-300 rounded-sm hover:bg-primary-200 focus:outline-none focus:ring-2 focus:ring-primary-200 focus:ring-offset-2"
+            >
+              <FaPlus className="inline mr-2" />
+              Add server rack
+            </button>
+
+            <input
+              type="text"
+              placeholder="Ask AI"
+              value={aiQuery}
+              onChange={(e) => setAiQuery(e.target.value)}
+              className="mt-4 bg-white w-full px-4 py-2 border border-gray-300 rounded-sm shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+            />
+            <button
+              onClick={() => askAI(aiQuery)}
+              className="flex justify-center items-center w-full px-4 py-2 text-text-950 bg-primary-300 rounded-sm hover:bg-primary-200 focus:outline-none focus:ring-2 focus:ring-primary-200 focus:ring-offset-2"
+            >
+              {loadingAi ? <FaSpinner className="animate-spin" /> : 'Ask AI'}
+            </button>
+          </div>
         </div>
       </div>
     </div>
