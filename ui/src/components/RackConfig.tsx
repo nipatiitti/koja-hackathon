@@ -1,11 +1,23 @@
 import { useState } from 'react'
+import ServerRack from './ServerRack'
 
 const RackConfig = () => {
   const [name, setName] = useState('')
+  const [serverRacks, setServerRacks] = useState<{ id: number; serverAmount: number }[]>([])
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     console.log('asd:', name)
+  }
+  const addServerRack = () => {
+    setServerRacks((prevRacks) => [
+      ...prevRacks,
+      {
+        id: 1,
+        serverAmount: 0,
+      },
+    ])
+    console.log(serverRacks)
   }
 
   return (
@@ -16,6 +28,7 @@ const RackConfig = () => {
           <label htmlFor="name" className="block text-sm font-medium text-gray-700">
             Name
           </label>
+          <ServerRack />
           <input
             type="text"
             id="name"
@@ -23,6 +36,7 @@ const RackConfig = () => {
             placeholder="Enter your name"
             onChange={(e) => setName(e.target.value)}
           />
+          <button onClick={addServerRack}>asd</button>
         </div>
         <button
           type="submit"
