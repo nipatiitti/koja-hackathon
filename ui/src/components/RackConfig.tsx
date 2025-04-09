@@ -7,13 +7,13 @@ const RackConfig = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    console.log('asd:', name)
+    console.log('asd:', serverRacks)
   }
   const addServerRack = () => {
     setServerRacks((prevRacks) => [
       ...prevRacks,
       {
-        id: 1,
+        id: prevRacks.length + 1,
         serverAmount: 0,
       },
     ])
@@ -28,7 +28,18 @@ const RackConfig = () => {
           <label htmlFor="name" className="block text-sm font-medium text-gray-700">
             Name
           </label>
-          <ServerRack />
+          <div>
+            {serverRacks.map((rack, index) => (
+              <ServerRack
+                key={index}
+                id={rack.id}
+                serverAmount={rack.serverAmount}
+                setServerRacks={setServerRacks}
+                serverRacks={serverRacks}
+              />
+            ))}
+            <button onClick={addServerRack}>Add server rack</button>
+          </div>
           <input
             type="text"
             id="name"
@@ -36,7 +47,6 @@ const RackConfig = () => {
             placeholder="Enter your name"
             onChange={(e) => setName(e.target.value)}
           />
-          <button onClick={addServerRack}>asd</button>
         </div>
         <button
           type="submit"
