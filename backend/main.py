@@ -4,6 +4,8 @@ import os
 import requests
 import json
 
+from mesh import generate
+
 app = FastAPI()
 
 # Add CORS middleware to allow all origins
@@ -192,3 +194,13 @@ def create_air_conditioner(width: int, height: int, depth: int, hole_size: int, 
 
     json = [panel.json(), box.json()]
     return json
+
+@app.get("/koja/air_conditioner_pipe")
+def create_air_conditioner_pipe(
+    wall_thickness = 1.0,
+    circular_radius = 10,
+    square_width = 50,
+    square_height = 30,
+    length = 60,
+):
+   return generate(wall_thickness, circular_radius, square_width, square_height, length)
