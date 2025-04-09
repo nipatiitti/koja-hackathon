@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@react-three/drei": "^10.0.6",
+    "@chronosai/three-infinite-grid": "^0.1.2",
     "@react-three/fiber": "^9.1.2",
     "@react-three/postprocessing": "^3.0.4",
     "@tailwindcss/vite": "^4.1.3",

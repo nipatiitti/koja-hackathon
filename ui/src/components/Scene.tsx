@@ -5,6 +5,7 @@ import { BlendFunction } from 'postprocessing'
 import { useEffect, useRef, useState } from 'react'
 import { BufferGeometry, Color, Group } from 'three'
 import { STLLoader } from 'three-stdlib'
+import { Grid } from '../threejs/Grid'
 import { ServerRackType } from '../types'
 
 const API_URL = 'http://localhost:8000'
@@ -89,6 +90,7 @@ export const Scene = ({ serverRacks }: { serverRacks: ServerRackType[] }) => {
           target={[0, 1, 0]}
         />
         <Skybox />
+        <Grid />
         <ambientLight intensity={2} />
         <pointLight position={[10, 10, 10]} intensity={2} />
         <pointLight position={[-10, -10, -10]} intensity={2} />
