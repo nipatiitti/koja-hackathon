@@ -74,6 +74,8 @@ const ModelViewer = ({
       position={defaultPosition}
       onMouseDown={() => onTransformStart()}
       onMouseUp={() => onTransformEnd()}
+      translationSnap={1.4}
+      rotationSnap={Math.PI / 2}
     >
       <group ref={groupRef} rotation={[-Math.PI / 2, 0, Math.PI / 2]}>
         {geometries.map((geometry, index) => (
