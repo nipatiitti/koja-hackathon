@@ -13,7 +13,7 @@ const ServerRack = ({ id, setServerRacks, serverRacks }: Props) => {
 
   useEffect(() => {
     setCurrentServerRack(serverRacks.find((rack) => rack.id === id))
-  }, [])
+  }, [id, serverRacks])
 
   const updateServerRacks = (serverAmount: number) => {
     console.log([id, serverAmount])
