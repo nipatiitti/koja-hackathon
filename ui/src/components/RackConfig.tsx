@@ -1,10 +1,10 @@
 import { useAtom } from 'jotai'
+import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import { FaPlus } from 'react-icons/fa'
 import { achievementsAtom } from '../helper'
 import { ServerRackType } from '../types'
 import ServerRack from './ServerRack'
-import { useEffect, useState } from 'react'
 
 interface Props {
   serverRacks: ServerRackType[]
@@ -64,10 +64,7 @@ const RackConfig = ({ serverRacks, setServerRacks }: Props) => {
         onChange={(e) => setSearchQuery(e.target.value)}
         className="mb-4 w-full px-4 py-2 border border-gray-300 rounded-sm shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
       />
-      <label
-        className="fixed top-3 text-sm text-text-950 rounded-sm bg-secondary gap-2 px-6 py-3 shadow-md"
-        style={{ left: '15%', transform: 'translateX(-50%)' }}
-      >
+      <label className="fixed top-3 left-28 text-sm text-text-950 rounded-sm bg-secondary gap-2 px-6 py-3 shadow-md">
         <div>Total Wattage: {serverRacks.reduce((sum, rack) => sum + rack.serverWattage, 0)} W</div>
         <div>Total Server Count: {serverRacks.reduce((sum, rack) => sum + rack.serverAmount, 0)}</div>
       </label>

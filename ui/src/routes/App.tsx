@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import AchievementList from '../components/AchievementList'
 import RackConfig from '../components/RackConfig'
+import { SaveAndImport } from '../components/SaveAndImport'
 import { Scene } from '../components/Scene'
 import { ServerRackType } from '../types'
 import Instructions from './Instructions'
@@ -18,6 +19,7 @@ const App = () => {
       <div className="relative md:absolute md:shadow-none shadow-md md:top-0 md:right-0 md:h-auto h-[33vh] md:max-h-screen w-full md:w-auto overflow-x-auto">
         <RackConfig serverRacks={serverRacks} setServerRacks={setServerRacks} />
       </div>
+      <SaveAndImport setState={setServerRacks} state={serverRacks} />
     </div>
   )
 }

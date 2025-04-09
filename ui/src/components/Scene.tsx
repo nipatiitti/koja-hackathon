@@ -267,7 +267,6 @@ const AirConditioner = ({ serverRack }: { serverRack: ServerRackType }) => {
         const modelBuffers = await Promise.all(
           modelInfos.flatMap((modelInfo, i) =>
             modelInfo.models.map(async (model) => {
-              console.log({ ...modelInfo, index: i })
               if (i === 1) {
                 setMaterials(modelInfo.materials)
               }
@@ -321,7 +320,6 @@ const AirConditioner = ({ serverRack }: { serverRack: ServerRackType }) => {
       ) : (
         // Render actual models
         geometries.map((geometry, index) => {
-          console.log(index, materials[index])
           return (
             <mesh
               key={index}
@@ -443,6 +441,8 @@ export const Scene = ({
   const orbit = useRef<IOrbitControls>(null)
   const [selectedModel, setSelectedModel] = useState<string | null>(null)
 
+  const groupRef = useRef<Group>(null)
+
   const setOrbit = (enabled: boolean) => {
     if (orbit.current) {
       orbit.current.enabled = enabled
@@ -462,41 +462,45 @@ export const Scene = ({
   }
 
   return (
-    <Canvas
-      camera={{ position: [0, 2, 3], fov: 80 }}
-      className="flex-1 flex three-container"
-      onPointerMissed={handleCanvasClick}
-    >
-      <OrbitControls minDistance={1} maxDistance={10} target={[0, 1, 0]} ref={orbit} />
-      <Grid />
-      <ambientLight intensity={8} />
-      <pointLight position={[-5, 5, 5]} intensity={50} color={0xbf47ad} />
-      <pointLight position={[0, 5, 0]} intensity={300} color={0xfffefa} />
-      {serverRacks.map((serverRack) => (
-        <ModelViewer
-          key={serverRack.id}
-          serverRack={serverRack}
-          setOrbit={setOrbit}
-          updatePosition={(position) => updateServerRackPosition(serverRack.id, position)}
-          isSelected={selectedModel === serverRack.id}
-          onClick={() => handleModelClick(serverRack.id)}
-        />
-      ))}
-      <EffectComposer enableNormalPass>
-        <SSAO
-          blendFunction={BlendFunction.MULTIPLY}
-          samples={5}
-          rings={4}
-          distanceThreshold={1.0}
-          distanceFalloff={0.0}
-          rangeThreshold={0.5}
-          rangeFalloff={0.1}
-          luminanceInfluence={0.9}
-          radius={20}
-          bias={0.5}
-        />
-      </EffectComposer>
-      {/* <Floor /> */}
-    </Canvas>
+    <>
+      <Canvas
+        camera={{ position: [0, 2, 3], fov: 80 }}
+        className="flex-1 flex three-container"
+        onPointerMissed={handleCanvasClick}
+      >
+        <OrbitControls minDistance={1} maxDistance={10} target={[0, 1, 0]} ref={orbit} />
+        <Grid />
+        <ambientLight intensity={8} />
+        <pointLight position={[-5, 5, 5]} intensity={50} color={0xbf47ad} />
+        <pointLight position={[0, 5, 0]} intensity={300} color={0xfffefa} />
+        <group ref={groupRef}>
+          {serverRacks.map((serverRack) => (
+            <ModelViewer
+              key={serverRack.id}
+              serverRack={serverRack}
+              setOrbit={setOrbit}
+              updatePosition={(position) => updateServerRackPosition(serverRack.id, position)}
+              isSelected={selectedModel === serverRack.id}
+              onClick={() => handleModelClick(serverRack.id)}
+            />
+          ))}
+        </group>
+        <EffectComposer enableNormalPass>
+          <SSAO
+            blendFunction={BlendFunction.MULTIPLY}
+            samples={5}
+            rings={4}
+            distanceThreshold={1.0}
+            distanceFalloff={0.0}
+            rangeThreshold={0.5}
+            rangeFalloff={0.1}
+            luminanceInfluence={0.9}
+            radius={20}
+            bias={0.5}
+          />
+        </EffectComposer>
+        {/* <Floor /> */}
+      </Canvas>
+    </>
   )
 }
