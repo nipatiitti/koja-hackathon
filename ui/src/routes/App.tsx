@@ -1,7 +1,7 @@
 import { useState } from 'react'
+import RackConfig from '../components/RackConfig'
+import { Scene } from '../components/Scene'
 import { ServerRackType } from '../types'
-import RackConfig from './RackConfig'
-import { Scene } from './Scene'
 
 const App = () => {
   const [serverRacks, setServerRacks] = useState<ServerRackType[]>([])
