@@ -4,6 +4,10 @@ import { IoMdClose } from 'react-icons/io'
 import { useAtom } from 'jotai'
 import { achievementsAtom } from '../helper'
 
+const achievementDescriptions = {
+  'rack-added': 'Added your first server rack!',
+}
+
 const AchievementList = () => {
   const [visible, setVisible] = useState(false)
 
@@ -45,7 +49,7 @@ const AchievementList = () => {
             <ul className="list-disc list-inside">
               {achievements.map((achievement, index) => (
                 <li key={index} className="text-white">
-                  {achievement}
+                  {achievementDescriptions[achievement] || achievement}
                 </li>
               ))}
             </ul>
