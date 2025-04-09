@@ -13,7 +13,7 @@ const App = () => {
         <Scene serverRacks={serverRacks} />
       </div>
       <Instructions />
-      <div className="absolute top-0 right-0 h-screen overflow-x-auto">
+      <div className="absolute top-0 right-0 max-h-screen overflow-x-auto">
         <RackConfig serverRacks={serverRacks} setServerRacks={setServerRacks} />
       </div>
     </div>
