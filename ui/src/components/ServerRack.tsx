@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { ServerRackType } from '../types'
+import { FaMinus } from 'react-icons/fa'
 
 interface Props {
   id: number
@@ -56,7 +57,13 @@ const ServerRack = ({ id, setServerRacks, serverRacks }: Props) => {
           onChange={(e) => updateServerRacks({ ...currentServerRack, serverAmount: Number(e.target.value) })}
         />
       </div>
-      <button onClick={deleteServerRack}>Delete</button>
+      <button
+        onClick={deleteServerRack}
+        className="flex justify-center items-center px-2 py-1 text-sm text-text-950 bg-red-300 rounded-sm hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-red-200 focus:ring-offset-2"
+      >
+        <FaMinus className="inline mr-1" />
+        <div>Delete</div>
+      </button>
     </div>
   )
 }

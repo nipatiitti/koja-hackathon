@@ -43,7 +43,7 @@ const RackConfig = ({ serverRacks, setServerRacks }: Props) => {
           ))}
           <button
             onClick={addServerRack}
-            className="flex justify-center items-center w-full px-4 py-2 text-text-950 bg-primary-300 rounded-sm hover:bg-primary-200 focus:outline-none focus:ring-2 focus:ring-primary-200 focus:ring-offset-2"
+            className="flex sticky bottom-0 justify-center items-center w-full px-4 py-2 text-text-950 bg-primary-300 rounded-sm hover:bg-primary-200 focus:outline-none focus:ring-2 focus:ring-primary-200 focus:ring-offset-2"
           >
             <FaPlus className="inline mr-2" />
             <div>Add server rack</div>
