@@ -75,11 +75,14 @@ const ModelViewer = ({
     if (transform.current) {
       const controls = transform.current
       const callback = (event: Event) => {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         setOrbit(!event.value)
       }
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       controls.addEventListener('dragging-changed', callback)
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       return () => controls.removeEventListener('dragging-changed', callback)
     }
