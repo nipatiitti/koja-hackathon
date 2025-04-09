@@ -67,7 +67,7 @@ const ModelViewer = ({
       setLoading(false)
     }
     loadModels()
-  }, [serverRack])
+  }, [serverRack.serverAmount])
 
   return (
     <TransformControls
@@ -111,6 +111,7 @@ const ModelViewer = ({
     </TransformControls>
   )
 }
+
 const AirConditioner = () => {
   const [geometries, setGeometries] = useState<BufferGeometry[]>([])
   const [loading, setLoading] = useState(true)
@@ -132,18 +133,14 @@ const AirConditioner = () => {
           throw new Error('No model data received')
         }
 
-        console.log('Model infos:', modelInfos)
-
         const modelBuffers = await Promise.all(
           modelInfos.flatMap((modelInfo) =>
             modelInfo.models.map(async (model) => {
-              console.log('Fetching model:', `${API_URL}/models/${modelInfo.id}/${model}`)
               const modelResponse = await fetch(`${API_URL}/models/${modelInfo.id}/${model}`)
               if (!modelResponse.ok) {
                 throw new Error(`Failed to fetch model data: ${modelResponse.status}`)
               }
               const buffer = await modelResponse.arrayBuffer()
-              console.log('Model buffer size:', buffer.byteLength)
               return buffer
             }),
           ),
@@ -153,7 +150,6 @@ const AirConditioner = () => {
         const loader = new STLLoader()
         const loadedGeometries = modelBuffers.map((buffer, index) => {
           try {
-            console.log(`Parsing model ${index} with size:`, buffer.byteLength)
             return loader.parse(buffer)
           } catch (parseError) {
             console.error(`Failed to parse model ${index}:`, parseError)
@@ -188,7 +184,13 @@ const AirConditioner = () => {
       ) : (
         // Render actual models
         geometries.map((geometry, index) => (
-          <mesh key={index} geometry={geometry} scale={0.001}>
+          <mesh
+            key={index}
+            geometry={geometry}
+            scale={0.001}
+            rotation={index <= 1 ? [-Math.PI / 2, 0, 0] : [0, 0, 0]}
+            position={index <= 1 ? [0, 0.45, 0] : [0, 0, 0]}
+          >
             <meshStandardMaterial color={0x999999} metalness={0.8} roughness={0.2} envMapIntensity={1.0} />
           </mesh>
         ))
