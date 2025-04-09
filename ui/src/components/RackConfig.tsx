@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { ServerRackType } from '../types'
 import ServerRack from './ServerRack'
+import { FaPlus } from 'react-icons/fa'
 
 interface Props {
   serverRacks: ServerRackType[]
@@ -42,9 +43,10 @@ const RackConfig = ({ serverRacks, setServerRacks }: Props) => {
           ))}
           <button
             onClick={addServerRack}
-            className="w-full px-4 py-2 text-text-950 bg-primary-300 rounded-sm hover:bg-primary-200 focus:outline-none focus:ring-2 focus:ring-primary-200 focus:ring-offset-2"
+            className="flex justify-center items-center w-full px-4 py-2 text-text-950 bg-primary-300 rounded-sm hover:bg-primary-200 focus:outline-none focus:ring-2 focus:ring-primary-200 focus:ring-offset-2"
           >
-            Add server rack
+            <FaPlus className="inline mr-2" />
+            <div>Add server rack</div>
           </button>
         </div>
       </div>
