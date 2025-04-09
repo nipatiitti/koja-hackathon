@@ -253,7 +253,7 @@ const AirConditioner = ({ serverRack }: { serverRack: ServerRackType }) => {
       try {
         setLoading(true)
         setError(null)
-        const height = Math.max(1000 * (serverRack.serverWattage / 500), 400)
+        const height = Math.min(Math.max(1000 * (serverRack.serverWattage / 500), 400), 3000)
         const response = await fetch(`${API_URL}/koja/air_conditioner?height=${height}`)
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`)
@@ -267,7 +267,6 @@ const AirConditioner = ({ serverRack }: { serverRack: ServerRackType }) => {
         const modelBuffers = await Promise.all(
           modelInfos.flatMap((modelInfo, i) =>
             modelInfo.models.map(async (model) => {
-              console.log({ ...modelInfo, index: i })
               if (i === 1) {
                 setMaterials(modelInfo.materials)
               }
@@ -321,7 +320,6 @@ const AirConditioner = ({ serverRack }: { serverRack: ServerRackType }) => {
       ) : (
         // Render actual models
         geometries.map((geometry, index) => {
-          console.log(index, materials[index])
           return (
             <mesh
               key={index}

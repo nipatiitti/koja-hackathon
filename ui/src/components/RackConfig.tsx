@@ -18,7 +18,6 @@ const RackConfig = ({ serverRacks, setServerRacks }: Props) => {
   const [achievements, setAchievements] = useAtom(achievementsAtom)
 
   useEffect(() => {
-    console.log(serverRacks.reduce((acc, rack) => acc + rack.serverWattage, 0))
     if (serverRacks.reduce((acc, rack) => acc + rack.serverWattage, 0) > 9000) {
       if (!achievements.includes('over9000')) {
         setAchievements((prev) => [...prev, 'over9000'])
