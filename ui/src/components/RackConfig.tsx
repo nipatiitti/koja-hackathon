@@ -27,30 +27,27 @@ const RackConfig = ({ serverRacks, setServerRacks }: Props) => {
   }
 
   return (
-    <div className="flex flex-col">
-      <form className="w-full max-w-md p-6 bg-white rounded shadow-md" onSubmit={handleSubmit}>
-        <h2 className="text-2xl font-bold mb-4 text-gray-800">Server Rack Config</h2>
-        <div className="mb-4">
-          <div className="flex flex-col gap-4">
-            {serverRacks.map((rack, index) => (
-              <ServerRack
-                key={index}
-                id={rack.id}
-                serverAmount={rack.serverAmount}
-                setServerRacks={setServerRacks}
-                serverRacks={serverRacks}
-              />
-            ))}
-            <button onClick={addServerRack}>Add server rack</button>
-          </div>
+    <div className="flex flex-col py-2 px-4 items-center">
+      <h2 className="text-2xl font-bold mb-4 text-primary-300">Server Room</h2>
+      <div className="mb-4">
+        <div className="flex flex-col gap-4">
+          {serverRacks.map((rack, index) => (
+            <ServerRack
+              key={index}
+              id={rack.id}
+              serverAmount={rack.serverAmount}
+              setServerRacks={setServerRacks}
+              serverRacks={serverRacks}
+            />
+          ))}
+          <button
+            onClick={addServerRack}
+            className="w-full px-4 py-2 text-text-950 bg-primary-300 rounded-sm hover:bg-primary-200 focus:outline-none focus:ring-2 focus:ring-primary-200 focus:ring-offset-2"
+          >
+            Add server rack
+          </button>
         </div>
-        <button
-          type="submit"
-          className="w-full px-4 py-2 text-white bg-blue-500 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-        >
-          Submit
-        </button>
-      </form>
+      </div>
     </div>
   )
 }

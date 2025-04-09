@@ -11,7 +11,7 @@ const App = () => {
       <div className="flex-[1]">
         <Scene serverRacks={serverRacks} />
       </div>
-      <div className="max-w-2xl min-w-fit">
+      <div className="w-2xl">
         <RackConfig serverRacks={serverRacks} setServerRacks={setServerRacks} />
       </div>
     </div>
