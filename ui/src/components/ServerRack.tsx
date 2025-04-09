@@ -1,9 +1,9 @@
-import { useEffect, useState } from 'react'
-import { IoCloseCircleOutline } from 'react-icons/io5'
-import { ServerRackType } from '../types'
-import toast from 'react-hot-toast'
 import { useAtom } from 'jotai'
+import { useEffect, useState } from 'react'
+import toast from 'react-hot-toast'
+import { IoCloseCircleOutline } from 'react-icons/io5'
 import { achievementsAtom } from '../helper'
+import { ServerRackType } from '../types'
 
 interface Props {
   id: string
@@ -72,42 +72,44 @@ const ServerRack = ({ id, setServerRacks, serverRacks, serverWattage }: Props) =
         >
           <IoCloseCircleOutline className="inline" />
         </button>
-        <label className="text-sm text-text-950" htmlFor="name">
+        <label className="text-xs text-text-950 font-bold" htmlFor="name">
           Name
         </label>
         <input
           type="text"
           id="name"
-          className="border-text-950 focus:outline-none focus:ring-primary-500 border-b"
+          className="border-text-700 focus:outline-none focus:ring-primary-500 border-b "
           value={currentServerRack.name}
           onChange={(e) => updateServerRacks({ ...currentServerRack, name: e.target.value })}
         />
       </div>
-      <div className="flex flex-col gap-1 justify-start items-start">
-        <label className="text-sm text-text-950" htmlFor="server-amount">
-          N. Servers
-        </label>
-        <input
-          type="number"
-          id="server-amount"
-          className="border-text-950 focus:outline-none focus:ring-primary-500 border-b"
-          placeholder="Amount of servers"
-          value={currentServerRack.serverAmount}
-          onChange={(e) => updateServerRacks({ ...currentServerRack, serverAmount: Number(e.target.value) })}
-        />
-      </div>
-      <div className="flex flex-col gap-1 justify-start items-start">
-        <label className="text-sm text-text-950" htmlFor="server-wattage">
-          Wattage
-        </label>
-        <input
-          type="number"
-          id="server-watt"
-          className="border-text-950 focus:outline-none focus:ring-primary-500 border-b"
-          placeholder="Wattage count of server rack"
-          value={currentServerRack.serverWattage}
-          onChange={(e) => updateServerRacks({ ...currentServerRack, serverWattage: Number(e.target.value) })}
-        />
+      <div className="flex gap-2 w-full">
+        <div className="flex flex-1 flex-col gap-1 justify-start items-start">
+          <label className="text-xs text-text-950 font-bold" htmlFor="server-amount">
+            N. Servers
+          </label>
+          <input
+            type="number"
+            id="server-amount"
+            className="border-text-700 focus:outline-none w-24 focus:ring-primary-500 border-b "
+            placeholder="Amount of servers"
+            value={currentServerRack.serverAmount}
+            onChange={(e) => updateServerRacks({ ...currentServerRack, serverAmount: Number(e.target.value) })}
+          />
+        </div>
+        <div className="flex flex-1 flex-col gap-1 justify-start items-start">
+          <label className="text-xs text-text-950 font-bold" htmlFor="server-wattage">
+            Wattage
+          </label>
+          <input
+            type="number"
+            id="server-watt"
+            className="border-text-700 focus:outline-none w-24 focus:ring-primary-500 border-b "
+            placeholder="Wattage count of server rack"
+            value={currentServerRack.serverWattage}
+            onChange={(e) => updateServerRacks({ ...currentServerRack, serverWattage: Number(e.target.value) })}
+          />
+        </div>
       </div>
     </div>
   )
