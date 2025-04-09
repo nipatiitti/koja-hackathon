@@ -1,15 +1,15 @@
 import { useState } from 'react'
+import AchievementList from '../components/AchievementList'
 import RackConfig from '../components/RackConfig'
 import { Scene } from '../components/Scene'
 import { ServerRackType } from '../types'
 import Instructions from './Instructions'
-import AchievementList from '../components/AchievementList'
 
 const App = () => {
   const [serverRacks, setServerRacks] = useState<ServerRackType[]>([])
 
   return (
-    <div className="flex flex-col md:flex-row min-h-screen max-h-screen bg-linear-to-b bg-linear-65 to-secondary from-background-100">
+    <div className="flex flex-col md:flex-row min-h-screen max-h-screen bg-linear-to-b to-secondary from-background-100">
       <div className="flex-1 flex flex-col h-[67vh] md:h-auto">
         <Scene serverRacks={serverRacks} setServerRacks={setServerRacks} />
       </div>
