@@ -50,7 +50,7 @@ const ServerRack = ({ id, setServerRacks, serverRacks }: Props) => {
         <input
           type="text"
           id="name"
-          className="border-none border-b-2 border-text-950 focus:outline-none focus:ring-primary-500"
+          className="border-text-950 focus:outline-none focus:ring-primary-500 border-b"
           value={currentServerRack.name}
           onChange={(e) => updateServerRacks({ ...currentServerRack, name: e.target.value })}
         />
@@ -62,7 +62,7 @@ const ServerRack = ({ id, setServerRacks, serverRacks }: Props) => {
         <input
           type="number"
           id="server-amount"
-          className="border-none border-b-2 border-text-950 focus:outline-none focus:ring-primary-500"
+          className="border-text-950 focus:outline-none focus:ring-primary-500 border-b"
           placeholder="Amount of servers"
           value={currentServerRack.serverAmount}
           onChange={(e) => updateServerRacks({ ...currentServerRack, serverAmount: Number(e.target.value) })}
