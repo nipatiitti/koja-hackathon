@@ -235,7 +235,7 @@ def create_air_conditioner_pipe(
     square_height: int = 30,
     length: int = 60,
 ):
-    model_info = {
+    box_request_body = {
         "id": "pipemesh",
         "models": ["ventilation_pipe_{}-{}.stl".format(square_width, square_height)],
         "min": [-1, -1, -1],
@@ -246,5 +246,14 @@ def create_air_conditioner_pipe(
         "lines": [],
         "spheres": [],
     }
-    box = generate(wall_thickness, circular_radius, square_width, square_height, length)
-    return json.dumps(model_info)
+    box_cache_key = "box" + str(box_request_body)
+    if box_cache_key in request_cache:
+        box_json = request_cache[box_cache_key]
+    else:
+        box_json = json.dumps(box_request_body)
+        box = generate(wall_thickness, circular_radius, square_width, square_height, length)
+        request_cache[box_cache_key] = box_json
+        save_cache()
+        # save_files(box_json.get("id"), box_json.get("models"))
+
+    return json.dumps(box_json)

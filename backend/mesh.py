@@ -1,6 +1,7 @@
 FREECADPATH = '/usr/lib/freecad/lib/'
 
 import sys
+import os
 sys.path.append(FREECADPATH)
 
 try:
@@ -21,7 +22,7 @@ def generate(
     """
     Generates ventilation pipe and returns path
     """
-    output_file = "models/" + "ventilation_pipe_{}-{}.stl".format(square_width, square_height)
+    output_file = "models/pipemesh/" + "ventilation_pipe_{}-{}.stl".format(square_width, square_height)
     # === Create a new hidden document ===
     doc = App.newDocument()
 
@@ -70,6 +71,9 @@ def generate(
     doc.recompute()
 
     # === Export to STL ===
+    if not os.path.exists(f"models/pipemesh"):
+        os.makedirs("models/pipemesh")
+
     Mesh.export([obj], output_file)
     print(f"✅ STL exported to: {output_file}")
     return output_file
