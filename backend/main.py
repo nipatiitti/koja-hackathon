@@ -159,12 +159,12 @@ def get_models(id: str, file: str = None):
 
 @app.get("/koja/air_conditioner")
 def create_air_conditioner(
-        width: 1000,
-        height: 900,
-        depth: 1000,
-        hole_size: 200,
-        hole_x: 0,
-        hole_y: 0
+        width: int = 1000,
+        height: int =900,
+        depth: int = 1000,
+        hole_size: int = 200,
+        hole_x: int = 0,
+        hole_y: int = 0
 ):
     """
     Get air conditioner whole parts
@@ -204,10 +204,10 @@ def create_air_conditioner(
 
 @app.get("/koja/air_conditioner_pipe")
 def create_air_conditioner_pipe(
-    wall_thickness = 1.0,
-    circular_radius = 10,
-    square_width = 50,
-    square_height = 30,
-    length = 60,
+    wall_thickness: float = 1.0,
+    circular_radius: int = 10,
+    square_width: int = 50,
+    square_height: int = 30,
+    length: int = 60,
 ):
    return generate(wall_thickness, circular_radius, square_width, square_height, length)
