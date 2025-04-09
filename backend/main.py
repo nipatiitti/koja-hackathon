@@ -185,6 +185,10 @@ def create_air_conditioner(
     }
     panel = requests.post("https://cad.koja.fi/api/v1/products/panel/model?format=stl", json = panel_request_body)
 
+
+    if panel.status_code != 200:
+        raise HTTPException(status_code=400, detail="error getting stuff")
+
     box_request_body = {
         "width": width,
         "depth": depth,
@@ -199,8 +203,16 @@ def create_air_conditioner(
     }
     box = requests.post("https://cad.koja.fi/api/v1/products/module/model?format=stl", json = box_request_body)
 
-    json = [panel.json(), box.json()]
-    return json
+    if box.status_code != 200:
+        raise HTTPException(status_code=400, detail="error getting stuff")
+
+    panel_json = panel.json()
+    box_json = box.json()
+
+    save_files(panel_json.get("id"), panel_json.get("models"))
+    save_files(box_json.get("id"), box_json.get("models"))
+
+    return [panel_json, box_json]
 
 @app.get("/koja/air_conditioner_pipe")
 def create_air_conditioner_pipe(
