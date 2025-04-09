@@ -1,7 +1,7 @@
 import { useState } from 'react'
+import { FaPlus } from 'react-icons/fa'
 import { ServerRackType } from '../types'
 import ServerRack from './ServerRack'
-import { FaPlus } from 'react-icons/fa'
 
 interface Props {
   serverRacks: ServerRackType[]
@@ -20,7 +20,7 @@ const RackConfig = ({ serverRacks, setServerRacks }: Props) => {
       ...prevRacks,
       {
         id: Math.floor(Math.random() * 1000),
-        serverAmount: 0,
+        serverAmount: 3,
         name: 'Server Rack ' + (prevRacks.length + 1),
       },
     ])
@@ -28,27 +28,25 @@ const RackConfig = ({ serverRacks, setServerRacks }: Props) => {
   }
 
   return (
-    <div className="flex flex-col py-2 px-4 items-center">
-      <h2 className="text-2xl font-bold mb-4 text-primary-300">Server Room</h2>
-      <div className="mb-4">
-        <div className="flex flex-col gap-4">
-          {serverRacks.map((rack, index) => (
-            <ServerRack
-              key={index}
-              id={rack.id}
-              serverAmount={rack.serverAmount}
-              setServerRacks={setServerRacks}
-              serverRacks={serverRacks}
-            />
-          ))}
-          <button
-            onClick={addServerRack}
-            className="flex justify-center items-center w-full px-4 py-2 text-text-950 bg-primary-300 rounded-sm hover:bg-primary-200 focus:outline-none focus:ring-2 focus:ring-primary-200 focus:ring-offset-2"
-          >
-            <FaPlus className="inline mr-2" />
-            <div>Add server rack</div>
-          </button>
-        </div>
+    <div className="flex flex-col py-8 px-6 gap-4 items-center">
+      <h2 className="text-2xl font-bold text-text-950">Server Room</h2>
+      <div className="flex flex-col gap-2">
+        {serverRacks.map((rack, index) => (
+          <ServerRack
+            key={index}
+            id={rack.id}
+            serverAmount={rack.serverAmount}
+            setServerRacks={setServerRacks}
+            serverRacks={serverRacks}
+          />
+        ))}
+        <button
+          onClick={addServerRack}
+          className="flex sticky bottom-0 justify-center items-center w-full px-4 py-2 text-text-950 bg-primary-300 rounded-sm hover:bg-primary-200 focus:outline-none focus:ring-2 focus:ring-primary-200 focus:ring-offset-2"
+        >
+          <FaPlus className="inline mr-2" />
+          <div>Add server rack</div>
+        </button>
       </div>
     </div>
   )

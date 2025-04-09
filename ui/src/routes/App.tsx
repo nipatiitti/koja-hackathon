@@ -11,7 +11,7 @@ const App = () => {
       <div className="flex-[1]">
         <Scene serverRacks={serverRacks} />
       </div>
-      <div className="w-2xl">
+      <div className="absolute top-0 right-0 h-screen overflow-x-auto">
         <RackConfig serverRacks={serverRacks} setServerRacks={setServerRacks} />
       </div>
     </div>

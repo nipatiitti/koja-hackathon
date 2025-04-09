@@ -34,13 +34,11 @@ const ModelViewer = ({
   defaultPosition,
   onTransformStart,
   onTransformEnd,
-  isTransforming,
 }: {
   serverRack: ServerRackType
   defaultPosition: [number, number, number]
   onTransformStart: () => void
   onTransformEnd: () => void
-  isTransforming: boolean
 }) => {
   const [modelInfo, setModelInfo] = useState<ModelInfo | null>(null)
   const [geometries, setGeometries] = useState<BufferGeometry[]>([])
@@ -50,6 +48,12 @@ const ModelViewer = ({
     const loadModels = async () => {
       const response = await fetch(`${API_URL}/server-rack?servers=${serverRack.serverAmount}`)
       const modelInfo = await response.json()
+
+      if (modelInfo.error || !modelInfo.models) {
+        console.error(modelInfo.error)
+        return
+      }
+
       setModelInfo(modelInfo)
 
       const modelBuffers = await Promise.all(await getModels(modelInfo))
@@ -68,9 +72,10 @@ const ModelViewer = ({
     <TransformControls
       mode="translate"
       position={defaultPosition}
-      onMouseDown={onTransformStart}
-      onMouseUp={onTransformEnd}
-      enabled={!isTransforming}
+      onMouseDown={() => onTransformStart()}
+      onMouseUp={() => onTransformEnd()}
+      translationSnap={1.4}
+      rotationSnap={Math.PI / 2}
     >
       <group ref={groupRef} rotation={[-Math.PI / 2, 0, Math.PI / 2]}>
         {geometries.map((geometry, index) => (
@@ -114,7 +119,6 @@ export const Scene = ({ serverRacks }: { serverRacks: ServerRackType[] }) => {
             defaultPosition={[index * 1.4, 0, 0]}
             onTransformStart={() => setTransformingModelId(serverRack.id)}
             onTransformEnd={() => setTransformingModelId(null)}
-            isTransforming={transformingModelId !== null && transformingModelId !== serverRack.id}
           />
         ))}
         <EffectComposer enableNormalPass>
