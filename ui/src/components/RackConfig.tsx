@@ -16,6 +16,7 @@ const RackConfig = ({ serverRacks, setServerRacks }: Props) => {
       {
         id: genId(),
         serverAmount: 3,
+        serverWattage: 500,
         name: 'Server Rack ' + (prevRacks.length + 1),
         highlighted: false,
       },
@@ -33,6 +34,7 @@ const RackConfig = ({ serverRacks, setServerRacks }: Props) => {
               key={index}
               id={rack.id}
               serverAmount={rack.serverAmount}
+              serverWattage={rack.serverWattage}
               setServerRacks={setServerRacks}
               serverRacks={serverRacks}
             />

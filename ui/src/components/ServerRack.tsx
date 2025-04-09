@@ -5,11 +5,12 @@ import { ServerRackType } from '../types'
 interface Props {
   id: string
   serverAmount: number
+  serverWattage: number
   setServerRacks: React.Dispatch<React.SetStateAction<ServerRackType[]>>
   serverRacks: ServerRackType[]
 }
 
-const ServerRack = ({ id, setServerRacks, serverRacks }: Props) => {
+const ServerRack = ({ id, setServerRacks, serverRacks, serverWattage }: Props) => {
   const [currentServerRack, setCurrentServerRack] = useState<null | ServerRackType>()
 
   useEffect(() => {
@@ -82,6 +83,19 @@ const ServerRack = ({ id, setServerRacks, serverRacks }: Props) => {
           placeholder="Amount of servers"
           value={currentServerRack.serverAmount}
           onChange={(e) => updateServerRacks({ ...currentServerRack, serverAmount: Number(e.target.value) })}
+        />
+      </div>
+      <div className="flex flex-col gap-1 justify-start items-start">
+        <label className="text-sm text-text-950" htmlFor="server-wattage">
+          Wattage
+        </label>
+        <input
+          type="number"
+          id="server-watt"
+          className="border-text-950 focus:outline-none focus:ring-primary-500 border-b"
+          placeholder="Wattage count of server rack"
+          value={currentServerRack.serverWattage}
+          onChange={(e) => updateServerRacks({ ...currentServerRack, serverWattage: Number(e.target.value) })}
         />
       </div>
     </div>
