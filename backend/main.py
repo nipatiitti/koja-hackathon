@@ -183,11 +183,20 @@ def create_air_conditioner(
              "type": "circle"
         }]
     }
-    panel = requests.post("https://cad.koja.fi/api/v1/products/panel/model?format=stl", json = panel_request_body)
-
-
-    if panel.status_code != 200:
-        raise HTTPException(status_code=400, detail="error getting stuff")
+    
+    # Check if panel request is in cache
+    panel_cache_key = "panel" + str(panel_request_body)
+    if panel_cache_key in request_cache:
+        panel_json = request_cache[panel_cache_key]
+    else:
+        panel = requests.post("https://cad.koja.fi/api/v1/products/panel/model?format=stl", json=panel_request_body)
+        if panel.status_code != 200:
+            raise HTTPException(status_code=400, detail="error getting stuff")
+        panel_json = panel.json()
+        # Cache the response
+        request_cache[panel_cache_key] = panel_json
+        save_cache()  # Save cache after updating
+        save_files(panel_json.get("id"), panel_json.get("models"))
 
     box_request_body = {
         "width": width,
@@ -201,16 +210,20 @@ def create_air_conditioner(
         "panelZPos": True,
         "panelZNeg": True
     }
-    box = requests.post("https://cad.koja.fi/api/v1/products/module/model?format=stl", json = box_request_body)
-
-    if box.status_code != 200:
-        raise HTTPException(status_code=400, detail="error getting stuff")
-
-    panel_json = panel.json()
-    box_json = box.json()
-
-    save_files(panel_json.get("id"), panel_json.get("models"))
-    save_files(box_json.get("id"), box_json.get("models"))
+    
+    # Check if box request is in cache
+    box_cache_key = "box" + str(box_request_body)
+    if box_cache_key in request_cache:
+        box_json = request_cache[box_cache_key]
+    else:
+        box = requests.post("https://cad.koja.fi/api/v1/products/module/model?format=stl", json=box_request_body)
+        if box.status_code != 200:
+            raise HTTPException(status_code=400, detail="error getting stuff")
+        box_json = box.json()
+        # Cache the response
+        request_cache[box_cache_key] = box_json
+        save_cache()  # Save cache after updating
+        save_files(box_json.get("id"), box_json.get("models"))
 
     return [panel_json, box_json]
 
