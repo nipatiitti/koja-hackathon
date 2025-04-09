@@ -13,6 +13,11 @@ model_directory = "models"
 if not os.path.exists(model_directory):
     os.makedirs(model_directory)
 
+# Cache that is request body => Koja CAD API response
+# This is used to avoid sending the same request multiple times
+# and to speed up the response time
+request_cache = {}
+
 """
 Example request:
 curl 'https://cad.koja.fi/api/v1/products/blockCoil/model?format=stl' \
@@ -151,8 +156,13 @@ def server_rack(servers: int = None):
         return {"error": "Atleast 3 servers are required"}
 
     body = create_server_rack(servers)
-    # Send request to Koja CAD API
 
+    # Check if the request body is already in the cache
+    if str(body) in request_cache:
+        # Return the cached response
+        return request_cache[str(body)]
+
+    # Send request to Koja CAD API
     print(body)
     response = requests.post(
         f"{cad_address}/products/{server_rack_product}/model?format=stl",
@@ -165,6 +175,10 @@ def server_rack(servers: int = None):
     # Check if the request was successful
     if response.status_code == 200:
         json = response.json()
+
+        # Cache the response
+        request_cache[str(body)] = json
+
         id = json.get("id")
         models = json.get("models")
 
