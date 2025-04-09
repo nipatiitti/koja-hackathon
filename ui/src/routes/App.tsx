@@ -9,7 +9,7 @@ const App = () => {
   return (
     <div className="flex min-h-screen bg-background-100">
       <div className="flex-[1]">
-        <Scene />
+        <Scene serverRacks={serverRacks} />
       </div>
       <div className="max-w-2xl min-w-fit">
         <RackConfig serverRacks={serverRacks} setServerRacks={setServerRacks} />

@@ -5,6 +5,7 @@ import { BlendFunction } from 'postprocessing'
 import { useEffect, useRef, useState } from 'react'
 import { BufferGeometry, Color, Group } from 'three'
 import { STLLoader } from 'three-stdlib'
+import { ServerRackType } from '../types'
 
 const API_URL = 'http://localhost:8000'
 
@@ -36,33 +37,38 @@ const getModels = async (modelInfo: ModelInfo) => {
   })
 }
 
-const ModelViewer = ({ modelInfo }: { modelInfo: ModelInfo }) => {
+const ModelViewer = ({ serverRack, position }: { serverRack: ServerRackType; position: [number, number, number] }) => {
+  const [modelInfo, setModelInfo] = useState<ModelInfo | null>(null)
   const [geometries, setGeometries] = useState<BufferGeometry[]>([])
   const groupRef = useRef<Group>(null)
 
   useEffect(() => {
     const loadModels = async () => {
+      const response = await fetch(`${API_URL}/server-rack?servers=${serverRack.serverAmount}`)
+      const modelInfo = await response.json()
+      setModelInfo(modelInfo)
+
       const modelBuffers = await Promise.all(await getModels(modelInfo))
       const loader = new STLLoader()
       const loadedGeometries = modelBuffers.map((buffer) => loader.parse(buffer))
       setGeometries(loadedGeometries)
     }
     loadModels()
-  }, [modelInfo])
+  }, [serverRack])
 
   if (geometries.length === 0) {
     return null
   }
 
   return (
-    <group ref={groupRef} rotation={[-Math.PI / 2, 0, 0]}>
+    <group ref={groupRef} rotation={[-Math.PI / 2, 0, Math.PI / 2]}>
       {geometries.map((geometry, index) => (
-        <mesh key={index} geometry={geometry} scale={0.001}>
+        <mesh key={index} position={position} geometry={geometry} scale={0.001}>
           <meshStandardMaterial
-            color={modelInfo.materials[index] === 'plastic' ? 0x111111 : 0xffffff}
-            metalness={modelInfo.materials[index] === 'plastic' ? 0.2 : 0.8}
-            roughness={modelInfo.materials[index] === 'plastic' ? 0.8 : 0.05}
-            envMapIntensity={modelInfo.materials[index] === 'plastic' ? 0.5 : 1.5}
+            color={modelInfo?.materials[index] === 'plastic' ? 0x111111 : 0xffffff}
+            metalness={modelInfo?.materials[index] === 'plastic' ? 0.2 : 0.8}
+            roughness={modelInfo?.materials[index] === 'plastic' ? 0.8 : 0.05}
+            envMapIntensity={modelInfo?.materials[index] === 'plastic' ? 0.5 : 1.5}
           />
         </mesh>
       ))}
@@ -70,20 +76,7 @@ const ModelViewer = ({ modelInfo }: { modelInfo: ModelInfo }) => {
   )
 }
 
-export const Scene = () => {
-  const [modelInfo, setModelInfo] = useState<ModelInfo | null>(null)
-
-  useEffect(() => {
-    const fetchModelInfo = async () => {
-      const response = await fetch(`${API_URL}/server-rack?servers=10`)
-      const data = await response.json()
-      console.log(data)
-      setModelInfo(data)
-    }
-
-    fetchModelInfo()
-  }, [])
-
+export const Scene = ({ serverRacks }: { serverRacks: ServerRackType[] }) => {
   return (
     <div className="w-full h-full">
       <Canvas camera={{ position: [0, 2, 3], fov: 80 }}>
@@ -100,7 +93,9 @@ export const Scene = () => {
         <pointLight position={[10, 10, 10]} intensity={2} />
         <pointLight position={[-10, -10, -10]} intensity={2} />
         <directionalLight position={[0, 5, 0]} intensity={2} />
-        {modelInfo && <ModelViewer modelInfo={modelInfo} />}
+        {serverRacks.map((serverRack, index) => (
+          <ModelViewer key={serverRack.id} serverRack={serverRack} position={[0, -index * 1.4, 0]} />
+        ))}
         <EffectComposer enableNormalPass>
           <SSAO
             blendFunction={BlendFunction.MULTIPLY}
