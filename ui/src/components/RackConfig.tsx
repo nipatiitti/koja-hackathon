@@ -7,13 +7,15 @@ interface Props {
   setServerRacks: React.Dispatch<React.SetStateAction<ServerRackType[]>>
 }
 
+const genId = () => Math.random().toString(36).substring(2, 9)
+
 const RackConfig = ({ serverRacks, setServerRacks }: Props) => {
   const addServerRack = () => {
     setServerRacks((prevRacks) => [
       ...prevRacks,
       {
-        id: Math.floor(Math.random() * 1000),
-        serverAmount: 0,
+        id: genId(),
+        serverAmount: 3,
         name: 'Server Rack ' + (prevRacks.length + 1),
       },
     ])
