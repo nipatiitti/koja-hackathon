@@ -1,8 +1,10 @@
+import { ServerRackType } from '../types'
+
 interface Props {
   id: number
   serverAmount: number
-  setServerRacks: React.Dispatch<React.SetStateAction<{ id: number; serverAmount: number }[]>>
-  serverRacks: { id: number; serverAmount: number }[]
+  setServerRacks: React.Dispatch<React.SetStateAction<ServerRackType[]>>
+  serverRacks: ServerRackType[]
 }
 
 const ServerRack = ({ id, setServerRacks, serverRacks }: Props) => {

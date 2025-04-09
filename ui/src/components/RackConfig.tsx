@@ -1,14 +1,10 @@
 import { useState } from 'react'
 import ServerRack from './ServerRack'
-
-interface ServerRackProps {
-  id: number
-  serverAmount: number
-}
+import { ServerRackType } from '../types'
 
 interface Props {
-  serverRacks: ServerRackProps[]
-  setServerRacks: React.Dispatch<React.SetStateAction<ServerRackProps[]>>
+  serverRacks: ServerRackType[]
+  setServerRacks: React.Dispatch<React.SetStateAction<ServerRackType[]>>
 }
 
 const RackConfig = ({ serverRacks, setServerRacks }: Props) => {
@@ -24,6 +20,7 @@ const RackConfig = ({ serverRacks, setServerRacks }: Props) => {
       {
         id: prevRacks.length + 1,
         serverAmount: 0,
+        name: '',
       },
     ])
     console.log(serverRacks)
