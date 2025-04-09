@@ -1,4 +1,4 @@
-import { OrbitControls } from '@react-three/drei'
+import { OrbitControls, TransformControls } from '@react-three/drei'
 import { Canvas } from '@react-three/fiber'
 import { EffectComposer, SSAO } from '@react-three/postprocessing'
 import { BlendFunction } from 'postprocessing'
@@ -29,7 +29,19 @@ const getModels = async (modelInfo: ModelInfo) => {
   })
 }
 
-const ModelViewer = ({ serverRack, position }: { serverRack: ServerRackType; position: [number, number, number] }) => {
+const ModelViewer = ({
+  serverRack,
+  defaultPosition,
+  onTransformStart,
+  onTransformEnd,
+  isTransforming,
+}: {
+  serverRack: ServerRackType
+  defaultPosition: [number, number, number]
+  onTransformStart: () => void
+  onTransformEnd: () => void
+  isTransforming: boolean
+}) => {
   const [modelInfo, setModelInfo] = useState<ModelInfo | null>(null)
   const [geometries, setGeometries] = useState<BufferGeometry[]>([])
   const groupRef = useRef<Group>(null)
@@ -53,29 +65,39 @@ const ModelViewer = ({ serverRack, position }: { serverRack: ServerRackType; pos
   }
 
   return (
-    <group ref={groupRef} rotation={[-Math.PI / 2, 0, Math.PI / 2]}>
-      {geometries.map((geometry, index) => (
-        <mesh key={index} position={position} geometry={geometry} scale={0.001}>
-          <meshStandardMaterial
-            color={modelInfo?.materials[index] === 'plastic' ? 0x111111 : 0xffffff}
-            metalness={modelInfo?.materials[index] === 'plastic' ? 0.2 : 0.8}
-            roughness={modelInfo?.materials[index] === 'plastic' ? 0.8 : 0.05}
-            envMapIntensity={modelInfo?.materials[index] === 'plastic' ? 0.5 : 1.5}
-          />
-        </mesh>
-      ))}
-    </group>
+    <TransformControls
+      mode="translate"
+      position={defaultPosition}
+      onMouseDown={onTransformStart}
+      onMouseUp={onTransformEnd}
+      enabled={!isTransforming}
+    >
+      <group ref={groupRef} rotation={[-Math.PI / 2, 0, Math.PI / 2]}>
+        {geometries.map((geometry, index) => (
+          <mesh key={index} geometry={geometry} scale={0.001}>
+            <meshStandardMaterial
+              color={modelInfo?.materials[index] === 'plastic' ? 0x111111 : 0xffffff}
+              metalness={modelInfo?.materials[index] === 'plastic' ? 0.2 : 0.8}
+              roughness={modelInfo?.materials[index] === 'plastic' ? 0.8 : 0.05}
+              envMapIntensity={modelInfo?.materials[index] === 'plastic' ? 0.5 : 1.5}
+            />
+          </mesh>
+        ))}
+      </group>
+    </TransformControls>
   )
 }
 
 export const Scene = ({ serverRacks }: { serverRacks: ServerRackType[] }) => {
+  const [transformingModelId, setTransformingModelId] = useState<number | null>(null)
+
   return (
     <div className="w-full h-full">
       <Canvas camera={{ position: [0, 2, 3], fov: 80 }}>
         <OrbitControls
-          enablePan={true}
-          enableZoom={true}
-          enableRotate={true}
+          enablePan={!transformingModelId}
+          enableZoom={!transformingModelId}
+          enableRotate={!transformingModelId}
           minDistance={1}
           maxDistance={10}
           target={[0, 1, 0]}
@@ -86,7 +108,14 @@ export const Scene = ({ serverRacks }: { serverRacks: ServerRackType[] }) => {
         <pointLight position={[-10, -10, -10]} intensity={2} />
         <directionalLight position={[0, 5, 0]} intensity={2} />
         {serverRacks.map((serverRack, index) => (
-          <ModelViewer key={serverRack.id} serverRack={serverRack} position={[0, -index * 1.4, 0]} />
+          <ModelViewer
+            key={serverRack.id}
+            serverRack={serverRack}
+            defaultPosition={[index * 1.4, 0, 0]}
+            onTransformStart={() => setTransformingModelId(serverRack.id)}
+            onTransformEnd={() => setTransformingModelId(null)}
+            isTransforming={transformingModelId !== null && transformingModelId !== serverRack.id}
+          />
         ))}
         <EffectComposer enableNormalPass>
           <SSAO
