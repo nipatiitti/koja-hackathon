@@ -48,6 +48,12 @@ const ModelViewer = ({
     const loadModels = async () => {
       const response = await fetch(`${API_URL}/server-rack?servers=${serverRack.serverAmount}`)
       const modelInfo = await response.json()
+
+      if (modelInfo.error || !modelInfo.models) {
+        console.error(modelInfo.error)
+        return
+      }
+
       setModelInfo(modelInfo)
 
       const modelBuffers = await Promise.all(await getModels(modelInfo))
