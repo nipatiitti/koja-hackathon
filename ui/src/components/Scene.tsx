@@ -249,9 +249,8 @@ const AirConditioner = ({ serverRack }: { serverRack: ServerRackType }) => {
       try {
         setLoading(true)
         setError(null)
-        const response = await fetch(
-          `${API_URL}/koja/air_conditioner?height=${1000 * (serverRack.serverWattage / 500)}`,
-        )
+        const height = Math.max(1000 * (serverRack.serverWattage / 500), 250)
+        const response = await fetch(`${API_URL}/koja/air_conditioner?height=${height}`)
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`)
         }
