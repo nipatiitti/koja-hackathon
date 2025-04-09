@@ -70,7 +70,6 @@ const ModelViewer = ({
 
   useEffect(() => {
     if (transform.current) {
-      console.log('TransformControls: ', transform.current)
       const controls = transform.current
       const callback = (event: Event) => {
         // @ts-ignore
