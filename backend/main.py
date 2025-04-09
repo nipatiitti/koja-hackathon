@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Response
 from fastapi.middleware.cors import CORSMiddleware
 import os
 import requests
@@ -207,7 +207,7 @@ def server_rack(servers: int = None):
     
 
 # Fetch the stl asset for a model based on id
-@app.get("/models/{id}")
+@app.get("/models/{id}/{file}")
 def get_models(id: str, file: str = None):
     # Check if the directory exists
     if not os.path.exists(f"models/{id}"):
@@ -219,10 +219,10 @@ def get_models(id: str, file: str = None):
     if not os.path.exists(f"models/{id}/{file}"):
         return {"error": "File not found"}
     
-    # Return the file
+    # Return the file as binary data with proper content type
     with open(f"models/{id}/{file}", "rb") as f:
         content = f.read()
-        return content
+        return Response(content=content, media_type="application/octet-stream")
 
 @app.get("/koja/air_conditioner")
 def create_air_conditioner(width: int, height: int, depth: int, hole_size: int, hole_x: int, hole_y: int):
