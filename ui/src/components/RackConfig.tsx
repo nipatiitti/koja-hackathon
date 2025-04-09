@@ -13,7 +13,7 @@ const RackConfig = ({ serverRacks, setServerRacks }: Props) => {
       ...prevRacks,
       {
         id: Math.floor(Math.random() * 1000),
-        serverAmount: 0,
+        serverAmount: 3,
         name: 'Server Rack ' + (prevRacks.length + 1),
       },
     ])
