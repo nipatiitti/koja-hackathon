@@ -33,10 +33,14 @@ const ModelViewer = ({
   serverRack,
   setOrbit,
   updatePosition,
+  isSelected,
+  onClick,
 }: {
   serverRack: ServerRackType
   setOrbit: (enabled: boolean) => void
   updatePosition: (position: [number, number, number]) => void
+  isSelected: boolean
+  onClick: () => void
 }) => {
   const [modelInfo, setModelInfo] = useState<ModelInfo | null>(null)
   const [geometries, setGeometries] = useState<BufferGeometry[]>([])
@@ -100,13 +104,16 @@ const ModelViewer = ({
   return (
     <TransformControls
       mode="translate"
+      showX={isSelected}
+      showY={isSelected}
+      showZ={isSelected}
       translationSnap={1.5}
       position={serverRack.location}
       rotationSnap={Math.PI / 2}
       ref={transform}
       onChange={setPosition}
     >
-      <group ref={groupRef} rotation={[-Math.PI / 2, 0, Math.PI / 2]}>
+      <group ref={groupRef} rotation={[-Math.PI / 2, 0, Math.PI / 2]} onClick={onClick}>
         {loading ? (
           // Skeleton loading box while models are loading
           <mesh position={[0, 0, 0.09 * serverRack.serverAmount]}>
@@ -119,7 +126,13 @@ const ModelViewer = ({
             <mesh key={index} geometry={geometry} scale={0.001}>
               <meshStandardMaterial
                 color={
-                  serverRack.highlighted ? '#ff0000' : modelInfo?.materials[index] === 'plastic' ? 0x111111 : 0xffffff
+                  isSelected
+                    ? '#00ff00'
+                    : serverRack.highlighted
+                    ? '#ff0000'
+                    : modelInfo?.materials[index] === 'plastic'
+                    ? 0x111111
+                    : 0xffffff
                 }
                 metalness={modelInfo?.materials[index] === 'plastic' ? 0.2 : 0.8}
                 roughness={modelInfo?.materials[index] === 'plastic' ? 0.8 : 0.05}
@@ -174,13 +187,20 @@ const Enclosure = ({ serverRack }: { serverRack: ServerRackType }) => {
       ) : (
         // Render actual models
         geometries.map((geometry, index) => (
-          <EnclosureMaterial
+          <mesh
             key={index}
-            serverRack={serverRack}
             geometry={geometry}
-            index={index}
-            material={materials[index] || 'plastic'}
-          />
+            scale={0.001}
+            rotation={[Math.PI / 2, 0, 0]}
+            position={[0, 0, (0.17 / 2) * serverRack.serverAmount]}
+          >
+            <EnclosureMaterial
+              serverRack={serverRack}
+              geometry={geometry}
+              index={index}
+              material={materials[index] || 'plastic'}
+            />
+          </mesh>
         ))
       )}
     </>
@@ -188,8 +208,6 @@ const Enclosure = ({ serverRack }: { serverRack: ServerRackType }) => {
 }
 
 export const EnclosureMaterial = ({
-  serverRack,
-  geometry,
   material,
   index,
 }: {
@@ -200,33 +218,24 @@ export const EnclosureMaterial = ({
 }) => {
   const glassIndexes = [20, 21, 22, 23, 24, 25, 26, 27]
 
-  return (
-    <mesh
-      geometry={geometry}
-      scale={0.001}
-      rotation={[Math.PI / 2, 0, 0]}
-      position={[0, 0, 0.0875 * serverRack.serverAmount]}
-    >
-      {glassIndexes.includes(index || 0) ? (
-        <meshPhysicalMaterial
-          color={0x111111}
-          metalness={0.9}
-          roughness={0.1}
-          transmission={1}
-          thickness={0.1}
-          ior={1.5}
-          envMapIntensity={1.0}
-          clearcoat={1}
-          clearcoatRoughness={0.1}
-          opacity={0.5}
-          transparent={true}
-          depthWrite={false}
-          depthTest={true}
-        />
-      ) : (
-        <meshStandardMaterial color={material === 'plastic' ? 0x111111 : 0xbacaff} metalness={0.9} roughness={0.1} />
-      )}
-    </mesh>
+  return glassIndexes.includes(index || 0) ? (
+    <meshPhysicalMaterial
+      color={0x111111}
+      metalness={0.9}
+      roughness={0.1}
+      transmission={1}
+      thickness={0.1}
+      ior={1.5}
+      envMapIntensity={1.0}
+      clearcoat={1}
+      clearcoatRoughness={0.1}
+      opacity={0.5}
+      transparent={true}
+      depthWrite={false}
+      depthTest={true}
+    />
+  ) : (
+    <meshStandardMaterial color={material === 'plastic' ? 0x111111 : 0xbacaff} metalness={0.9} roughness={0.1} />
   )
 }
 
@@ -342,8 +351,6 @@ const AirConditionerPipe = ({ serverRack }: { serverRack: ServerRackType }) => {
         }
         const modelInfo = JSON.parse(JSON.parse(await response.json()))
 
-        console.log(modelInfo)
-
         const modelBuffers = await Promise.all(
           modelInfo.models.map(async (model: string) => {
             const modelResponse = await fetch(`${API_URL}/models/${modelInfo.id}/${model}`)
@@ -418,6 +425,7 @@ export const Scene = ({
   setServerRacks: React.Dispatch<React.SetStateAction<ServerRackType[]>>
 }) => {
   const orbit = useRef<IOrbitControls>(null)
+  const [selectedModel, setSelectedModel] = useState<string | null>(null)
 
   const setOrbit = (enabled: boolean) => {
     if (orbit.current) {
@@ -429,20 +437,34 @@ export const Scene = ({
     setServerRacks((prevRacks) => prevRacks.map((rack) => (rack.id === id ? { ...rack, location: position } : rack)))
   }
 
+  const handleModelClick = (modelId: string) => {
+    setSelectedModel(modelId)
+  }
+
+  const handleCanvasClick = () => {
+    setSelectedModel(null)
+  }
+
   return (
-    <Canvas camera={{ position: [0, 2, 3], fov: 80 }} className="flex-1 flex three-container">
+    <Canvas
+      camera={{ position: [0, 2, 3], fov: 80 }}
+      className="flex-1 flex three-container"
+      onPointerMissed={handleCanvasClick}
+    >
       <OrbitControls minDistance={1} maxDistance={10} target={[0, 1, 0]} ref={orbit} />
       <Grid />
       <ambientLight intensity={2} />
       <pointLight position={[10, 10, 10]} intensity={5} />
       <pointLight position={[-10, -10, -10]} intensity={5} />
       <directionalLight position={[0, 5, 0]} intensity={5} />
-      {serverRacks.map((serverRack, index) => (
+      {serverRacks.map((serverRack) => (
         <ModelViewer
           key={serverRack.id}
           serverRack={serverRack}
           setOrbit={setOrbit}
           updatePosition={(position) => updateServerRackPosition(serverRack.id, position)}
+          isSelected={selectedModel === serverRack.id}
+          onClick={() => handleModelClick(serverRack.id)}
         />
       ))}
       <EffectComposer enableNormalPass>
