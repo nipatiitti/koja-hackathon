@@ -158,7 +158,14 @@ def get_models(id: str, file: str = None):
         return Response(content=content, media_type="application/octet-stream")
 
 @app.get("/koja/air_conditioner")
-def create_air_conditioner(width: int, height: int, depth: int, hole_size: int, hole_x: int, hole_y: int):
+def create_air_conditioner(
+        width: 1000,
+        height: 900,
+        depth: 1000,
+        hole_size: 200,
+        hole_x: 0,
+        hole_y: 0
+):
     """
     Get air conditioner whole parts
     """
