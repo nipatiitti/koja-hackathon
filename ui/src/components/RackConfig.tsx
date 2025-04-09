@@ -11,18 +11,20 @@ const genId = () => Math.random().toString(36).substring(2, 9)
 
 const RackConfig = ({ serverRacks, setServerRacks }: Props) => {
   const addServerRack = () => {
-    setServerRacks((prevRacks) => [
-      ...prevRacks,
-      {
-        id: genId(),
-        serverAmount: 3,
-        serverWattage: 500,
-        name: 'Server Rack ' + (prevRacks.length + 1),
-        highlighted: false,
-        location: [0, 0, 0],
-      },
-    ])
-    console.log(serverRacks)
+    setServerRacks((prevRacks) => {
+      console.log([prevRacks.length * 1.4, 0, 0])
+      return [
+        ...prevRacks,
+        {
+          id: genId(),
+          serverAmount: 3,
+          serverWattage: 500,
+          name: 'Server Rack ' + (prevRacks.length + 1),
+          highlighted: false,
+          location: [prevRacks.length * 1.4, 0, 0],
+        },
+      ]
+    })
   }
 
   return (
@@ -45,7 +47,7 @@ const RackConfig = ({ serverRacks, setServerRacks }: Props) => {
             className="flex sticky bottom-4 justify-center items-center w-full px-4 py-2 text-text-950 bg-primary-300 rounded-sm hover:bg-primary-200 focus:outline-none focus:ring-2 focus:ring-primary-200 focus:ring-offset-2"
           >
             <FaPlus className="inline mr-2" />
-            <div>Add server rack</div>
+            Add server rack
           </button>
         </div>
       </div>

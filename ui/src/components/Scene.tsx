@@ -31,12 +31,12 @@ const getModels = (modelInfo: ModelInfo) => {
 
 const ModelViewer = ({
   serverRack,
-  defaultPosition,
   setOrbit,
+  updatePosition,
 }: {
   serverRack: ServerRackType
-  defaultPosition: [number, number, number]
   setOrbit: (enabled: boolean) => void
+  updatePosition: (position: [number, number, number]) => void
 }) => {
   const [modelInfo, setModelInfo] = useState<ModelInfo | null>(null)
   const [geometries, setGeometries] = useState<BufferGeometry[]>([])
@@ -81,37 +81,30 @@ const ModelViewer = ({
     }
   }, [setOrbit])
 
-  const handleTransformChange = () => {
-    if (groupRef.current && serverRack) {
-      const position = groupRef.current.parent?.position
-      if (position) {
-        serverRack.location = [position.x, position.y, position.z]
-      }
-    }
-  }
+  const setPosition = () => {
+    if (!transform.current) return
 
-  useEffect(() => {
-    const controls = transform.current
-    if (controls) {
-      // Save position when transform ends
-      const onObjectChange = () => handleTransformChange()
-      // @ts-ignore
-      controls.addEventListener('objectChange', onObjectChange)
-      return () => {
-        // @ts-ignore
-        controls.removeEventListener('objectChange', onObjectChange)
-      }
+    const position = transform.current.position.toArray() as [number, number, number]
+    if (
+      (position[0] === serverRack.location[0] &&
+        position[1] === serverRack.location[1] &&
+        position[2] === serverRack.location[2]) ||
+      (position[0] === 0 && position[1] === 0 && position[2] === 0)
+    ) {
+      return
     }
-  }, [serverRack])
+
+    updatePosition(position)
+  }
 
   return (
     <TransformControls
       mode="translate"
-      position={serverRack.location || defaultPosition}
-      translationSnap={1.4}
+      translationSnap={1.5}
+      position={serverRack.location}
       rotationSnap={Math.PI / 2}
       ref={transform}
-      onUpdate={handleTransformChange}
+      onChange={setPosition}
     >
       <group ref={groupRef} rotation={[-Math.PI / 2, 0, Math.PI / 2]}>
         {loading ? (
@@ -135,9 +128,61 @@ const ModelViewer = ({
             </mesh>
           ))
         )}
+        <Enclosure serverRack={serverRack} />
+        {/* <AirConditioner /> */}
       </group>
-      <AirConditioner />
     </TransformControls>
+  )
+}
+
+const Enclosure = ({ serverRack }: { serverRack: ServerRackType }) => {
+  const [geometries, setGeometries] = useState<BufferGeometry[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const loadModels = async () => {
+      setLoading(true)
+      const response = await fetch(`${API_URL}/server-rack-enclosure?servers=${serverRack.serverAmount}`)
+      const modelInfo = await response.json()
+
+      if (modelInfo.error || !modelInfo.models) {
+        console.error(modelInfo.error)
+        setLoading(false)
+        return
+      }
+
+      const modelBuffers = await Promise.all(await getModels(modelInfo))
+      const loader = new STLLoader()
+      const loadedGeometries = modelBuffers.map((buffer) => loader.parse(buffer))
+      setGeometries(loadedGeometries)
+      setLoading(false)
+    }
+    loadModels()
+  }, [serverRack.serverAmount])
+
+  return (
+    <>
+      {loading ? (
+        // Placeholder while loading
+        <mesh>
+          <boxGeometry args={[1, 1, 1]} />
+          <meshStandardMaterial color={0x0000ff} wireframe={true} opacity={0.5} transparent={true} />
+        </mesh>
+      ) : (
+        // Render actual models
+        geometries.map((geometry, index) => (
+          <mesh
+            key={index}
+            geometry={geometry}
+            scale={0.001}
+            rotation={[Math.PI / 2, 0, 0]}
+            position={[0, 0, 0.0875 * serverRack.serverAmount]}
+          >
+            <meshStandardMaterial color={0xaaaaaa} metalness={0.8} roughness={0.8} envMapIntensity={1.0} />
+          </mesh>
+        ))
+      )}
+    </>
   )
 }
 
@@ -162,8 +207,6 @@ const AirConditioner = () => {
           throw new Error(`HTTP error! status: ${response2.status}`)
         }
         modelInfos.push(JSON.parse(await response2.json()))
-
-        console.log(modelInfos)
 
         if (!modelInfos || modelInfos.length === 0) {
           throw new Error('No model data received')
@@ -239,13 +282,23 @@ const AirConditioner = () => {
   )
 }
 
-export const Scene = ({ serverRacks }: { serverRacks: ServerRackType[] }) => {
+export const Scene = ({
+  serverRacks,
+  setServerRacks,
+}: {
+  serverRacks: ServerRackType[]
+  setServerRacks: React.Dispatch<React.SetStateAction<ServerRackType[]>>
+}) => {
   const orbit = useRef<IOrbitControls>(null)
 
   const setOrbit = (enabled: boolean) => {
     if (orbit.current) {
       orbit.current.enabled = enabled
     }
+  }
+
+  const updateServerRackPosition = (id: string, position: [number, number, number]) => {
+    setServerRacks((prevRacks) => prevRacks.map((rack) => (rack.id === id ? { ...rack, location: position } : rack)))
   }
 
   return (
@@ -260,8 +313,8 @@ export const Scene = ({ serverRacks }: { serverRacks: ServerRackType[] }) => {
         <ModelViewer
           key={serverRack.id}
           serverRack={serverRack}
-          defaultPosition={[index * 1.4, 0, 0]}
           setOrbit={setOrbit}
+          updatePosition={(position) => updateServerRackPosition(serverRack.id, position)}
         />
       ))}
       <EffectComposer enableNormalPass>
