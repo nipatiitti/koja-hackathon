@@ -1,9 +1,10 @@
 import { useState } from 'react'
 import RackConfig from './RackConfig'
 import { Scene } from './Scene'
+import { ServerRackType } from '../types'
 
 const App = () => {
-  const [serverRacks, setServerRacks] = useState<{ id: number; serverAmount: number }[]>([])
+  const [serverRacks, setServerRacks] = useState<ServerRackType[]>([])
 
   return (
     <div className="flex">
