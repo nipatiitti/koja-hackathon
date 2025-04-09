@@ -290,7 +290,7 @@ def create_air_conditioner_pipe(
 ):
     box_request_body = {
         "id": "pipemesh",
-        "models": ["ventilation_pipe_{}-{}.stl".format(square_width, square_height)],
+        "models": ["ventilation_pipe_{}-{}-{}-{}-{}.stl".format(square_width, square_height, length, circular_radius, wall_thickness)],
         "min": [-1, -1, -1],
         "max": [-1, -1, -1],
         "center": [-1, -1, -1],

@@ -22,7 +22,7 @@ def generate(
     """
     Generates ventilation pipe and returns path
     """
-    output_file = "models/pipemesh/" + "ventilation_pipe_{}-{}.stl".format(square_width, square_height)
+    output_file = "models/pipemesh/" + "ventilation_pipe_{}-{}-{}-{}-{}.stl".format(square_width, square_height, length, circular_radius, wall_thickness)
     # === Create a new hidden document ===
     doc = App.newDocument()
 

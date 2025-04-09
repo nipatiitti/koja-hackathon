@@ -129,7 +129,7 @@ const ModelViewer = ({
           ))
         )}
         <Enclosure serverRack={serverRack} />
-        {/* <AirConditioner /> */}
+        <AirConditioner serverRack={serverRack} />
       </group>
     </TransformControls>
   )
@@ -186,7 +186,7 @@ const Enclosure = ({ serverRack }: { serverRack: ServerRackType }) => {
   )
 }
 
-const AirConditioner = () => {
+const AirConditioner = ({ serverRack }: { serverRack: ServerRackType }) => {
   const [geometries, setGeometries] = useState<BufferGeometry[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -196,17 +196,11 @@ const AirConditioner = () => {
       try {
         setLoading(true)
         setError(null)
-        const response1 = await fetch(`${API_URL}/koja/air_conditioner`)
-        if (!response1.ok) {
-          throw new Error(`HTTP error! status: ${response1.status}`)
+        const response = await fetch(`${API_URL}/koja/air_conditioner`)
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`)
         }
-        const modelInfos = (await response1.json()) as ModelInfo[]
-
-        const response2 = await fetch(`${API_URL}/koja/air_conditioner_pipe`)
-        if (!response2.ok) {
-          throw new Error(`HTTP error! status: ${response2.status}`)
-        }
-        modelInfos.push(JSON.parse(await response2.json()))
+        const modelInfos = (await response.json()) as ModelInfo[]
 
         if (!modelInfos || modelInfos.length === 0) {
           throw new Error('No model data received')
@@ -224,8 +218,6 @@ const AirConditioner = () => {
             }),
           ),
         )
-
-        console.log('Number of model buffers:', modelBuffers.length)
         const loader = new STLLoader()
         const loadedGeometries = modelBuffers.map((buffer, index) => {
           if (buffer.byteLength < 50) {
@@ -271,10 +263,100 @@ const AirConditioner = () => {
             key={index}
             geometry={geometry}
             scale={0.001}
-            rotation={index <= 1 ? [0, 0, 0] : [Math.PI / 2, 0, 0]}
-            position={index <= 1 ? [0, 0.5, -2 + 0.45] : [0, 0.5, -2]}
+            rotation={index <= 1 ? [Math.PI / 2, -Math.PI / 2, 0] : [0, 0, Math.PI / 2]}
+            position={index <= 1 ? [1.05, 0, 0.09 * serverRack.serverAmount] : [1.5, 0, 0.09 * serverRack.serverAmount]}
           >
             <meshStandardMaterial color={0xffffff} metalness={0.8} roughness={0.2} envMapIntensity={1.0} />{' '}
+          </mesh>
+        ))
+      )}
+
+      <AirConditionerPipe serverRack={serverRack} />
+    </>
+  )
+}
+
+const AirConditionerPipe = ({ serverRack }: { serverRack: ServerRackType }) => {
+  const [geometries, setGeometries] = useState<BufferGeometry[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    const loadAirConditioner = async () => {
+      try {
+        setLoading(true)
+        setError(null)
+        const response = await fetch(
+          `${API_URL}/koja/air_conditioner_pipe?square_width=1400&square_height=${
+            160 * serverRack.serverAmount
+          }&length=500&circular_radius=200`,
+        )
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`)
+        }
+        const modelInfo = JSON.parse(JSON.parse(await response.json()))
+
+        console.log(modelInfo)
+
+        const modelBuffers = await Promise.all(
+          modelInfo.models.map(async (model: string) => {
+            const modelResponse = await fetch(`${API_URL}/models/${modelInfo.id}/${model}`)
+            if (!modelResponse.ok) {
+              throw new Error(`Failed to fetch model data: ${modelResponse.status}`)
+            }
+            const buffer = await modelResponse.arrayBuffer()
+            return buffer
+          }),
+        )
+        const loader = new STLLoader()
+        const loadedGeometries = modelBuffers.map((buffer, index) => {
+          if (buffer.byteLength < 50) {
+            console.log('Small buffer detected:', new TextDecoder().decode(buffer), 'Buffer size:', buffer.byteLength)
+          }
+
+          try {
+            return loader.parse(buffer)
+          } catch (parseError) {
+            console.error(`Failed to parse model ${index}:`, parseError)
+            throw parseError
+          }
+        })
+        setGeometries(loadedGeometries)
+      } catch (error) {
+        console.error('Failed to load air conditioner:', error)
+        setError(error instanceof Error ? error.message : 'Failed to load air conditioner')
+      } finally {
+        setLoading(false)
+      }
+    }
+    loadAirConditioner()
+  }, [serverRack.serverAmount])
+
+  return (
+    <>
+      {loading ? (
+        // Placeholder while loading
+        <mesh>
+          <boxGeometry args={[1, 1, 1]} />
+          <meshStandardMaterial color={0x0000ff} wireframe={true} opacity={0.5} transparent={true} />
+        </mesh>
+      ) : error ? (
+        // Error state
+        <mesh>
+          <boxGeometry args={[1, 1, 1]} />
+          <meshStandardMaterial color={0xff0000} wireframe={true} opacity={0.5} transparent={true} />
+        </mesh>
+      ) : (
+        // Render actual models
+        geometries.map((geometry, index) => (
+          <mesh
+            key={index}
+            geometry={geometry}
+            scale={0.001}
+            rotation={[Math.PI / 2, -Math.PI / 2, 0]}
+            position={[1.03, 0, (0.175 * serverRack.serverAmount) / 2]}
+          >
+            <meshStandardMaterial color={0xffffff} metalness={0.8} roughness={0.2} envMapIntensity={1.0} />
           </mesh>
         ))
       )}
