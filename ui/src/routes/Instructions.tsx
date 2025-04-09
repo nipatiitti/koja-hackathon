@@ -22,7 +22,7 @@ const Instructions = () => {
           </button>
           <div
             className={`overflow-hidden transition-all duration-300 ease-in-out ${
-              visible ? 'max-h-96 min-w-70 opacity-100' : 'max-h-0 opacity-0 hidden'
+              visible ? 'max-h-96 max-w-70 min-w-70 opacity-100' : 'max-h-0 max-w-0 min-w-0 opacity-0'
             }`}
           >
             <h1 className="text-xl mb-2">This is a server room modeling application with air conditioning</h1>
