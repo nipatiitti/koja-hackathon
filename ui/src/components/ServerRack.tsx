@@ -26,6 +26,11 @@ const ServerRack = ({ id, setServerRacks, serverRacks }: Props) => {
     setServerRacks(updatedRacks)
   }
 
+  const deleteServerRack = () => {
+    const updatedRacks = serverRacks.filter((rack) => rack.id !== id)
+    setServerRacks(updatedRacks)
+  }
+
   if (!currentServerRack) {
     return <div>Loading...</div>
   }
@@ -52,6 +57,7 @@ const ServerRack = ({ id, setServerRacks, serverRacks }: Props) => {
             onChange={(e) => updateServerRacks(Number(e.target.value))}
           />
         </div>
+        <button onClick={deleteServerRack}>Delete</button>
       </div>
     </div>
   )
