@@ -214,10 +214,6 @@ def get_models(id: str, file: str = None):
         content = f.read()
         return content
 
-@app.get("/server/rack")
-def create_server_rack(servers: int = None):
-    pass
-
 @app.get("/koja/air_conditioner")
 def create_air_conditioner(width: int, height: int, depth: int, hole_size: int, hole_x: int, hole_y: int):
     """
