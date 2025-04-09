@@ -1,0 +1,867 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "KojaCAD API",
+    "description": "API for the KojaCAD tools.",
+    "version": "0.13.0"
+  },
+  "servers": [{ "url": "/api" }],
+  "paths": {
+    "/v1/products": {
+      "get": {
+        "tags": ["v1", "products"],
+        "summary": "List Products",
+        "description": "List all available products and their parameters.",
+        "operationId": "list_products_v1_products_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "$ref": "#/components/schemas/ProductInfo"
+                  },
+                  "type": "object",
+                  "title": "Response List Products V1 Products Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/products/{name}/model": {
+      "post": {
+        "tags": ["v1", "products"],
+        "summary": "Generate Product Model",
+        "description": "Generate a 3D model for the product.",
+        "operationId": "generate_product_model_v1_products__name__model_post",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "enum": [
+                "panelInside",
+                "panelOutside",
+                "panel",
+                "coilBlockBottomFrame",
+                "coilBlockMiddleFrame",
+                "coilBlockTopFrame",
+                "blockCoil",
+                "profile",
+                "cornerPiece",
+                "module"
+              ],
+              "type": "string",
+              "title": "Name"
+            }
+          },
+          {
+            "name": "format",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "enum": ["step", "gltf", "glb", "stl", "obj", "ply"],
+              "type": "string",
+              "title": "Format"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "type": "object", "title": "Params" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ProductModel" }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/products/{name}/properties": {
+      "post": {
+        "tags": ["v1", "products"],
+        "summary": "Get Product Properties",
+        "description": "Calculate information about the product's material properties and weight.",
+        "operationId": "get_product_properties_v1_products__name__properties_post",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "enum": [
+                "panelInside",
+                "panelOutside",
+                "panel",
+                "coilBlockBottomFrame",
+                "coilBlockMiddleFrame",
+                "coilBlockTopFrame",
+                "blockCoil",
+                "profile",
+                "cornerPiece",
+                "module"
+              ],
+              "type": "string",
+              "title": "Name"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "type": "object", "title": "Params" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ProductProperties" }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/model/{model_id}/{file_path}": {
+      "get": {
+        "tags": ["v1", "model"],
+        "summary": "Get Model File",
+        "operationId": "get_model_file_v1_model__model_id___file_path__get",
+        "parameters": [
+          {
+            "name": "model_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid4",
+              "title": "Model Id"
+            }
+          },
+          {
+            "name": "file_path",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "title": "File Path" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "Successful Response" },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/model/convert": {
+      "post": {
+        "tags": ["v1", "model"],
+        "summary": "Convert Model",
+        "description": "Convert a given model into another format.",
+        "operationId": "convert_model_v1_model_convert_post",
+        "parameters": [
+          {
+            "name": "from_format",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "const": "step",
+              "type": "string",
+              "title": "From Format"
+            }
+          },
+          {
+            "name": "to_format",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "enum": ["step", "gltf", "glb", "stl", "obj", "ply"],
+              "type": "string",
+              "title": "To Format"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_convert_model_v1_model_convert_post"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ModelInfo" }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/features/bends": {
+      "post": {
+        "tags": ["v1", "features"],
+        "summary": "Find Bends",
+        "description": "Find all sheet metal bends in the given model.",
+        "operationId": "find_bends_v1_features_bends_post",
+        "parameters": [
+          {
+            "name": "format",
+            "in": "query",
+            "required": true,
+            "schema": { "const": "step", "type": "string", "title": "Format" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_find_bends_v1_features_bends_post"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/Bend" },
+                  "title": "Response Find Bends V1 Features Bends Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/features/holes": {
+      "post": {
+        "tags": ["v1", "features"],
+        "summary": "Find Holes",
+        "description": "Find all holes in the given model.",
+        "operationId": "find_holes_v1_features_holes_post",
+        "parameters": [
+          {
+            "name": "format",
+            "in": "query",
+            "required": true,
+            "schema": { "const": "step", "type": "string", "title": "Format" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_find_holes_v1_features_holes_post"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/Hole" },
+                  "title": "Response Find Holes V1 Features Holes Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Bend": {
+        "properties": {
+          "position": {
+            "$ref": "#/components/schemas/Point",
+            "title": "Position",
+            "description": "Starting position of the bend."
+          },
+          "length": {
+            "type": "number",
+            "title": "Length",
+            "description": "Bend edge length along the surface."
+          },
+          "radius": {
+            "type": "number",
+            "title": "Radius",
+            "description": "Inner (smaller) radius of the bend."
+          },
+          "dir": {
+            "$ref": "#/components/schemas/Point",
+            "title": "Direction",
+            "description": "Direction of the bend along the surface."
+          },
+          "distance": {
+            "type": "number",
+            "title": "Distance",
+            "description": "Distance to the next bend."
+          },
+          "distance_position": {
+            "$ref": "#/components/schemas/Point",
+            "title": "Distance position",
+            "description": "Starting position of the distance from the bend."
+          },
+          "distance_dir": {
+            "$ref": "#/components/schemas/Point",
+            "title": "Distance direction",
+            "description": "Direction of the distance from the bend."
+          }
+        },
+        "type": "object",
+        "required": [
+          "position",
+          "length",
+          "radius",
+          "dir",
+          "distance",
+          "distance_position",
+          "distance_dir"
+        ],
+        "title": "Bend",
+        "description": "Sheet metal bend."
+      },
+      "Body_convert_model_v1_model_convert_post": {
+        "properties": {
+          "file": {
+            "type": "string",
+            "format": "binary",
+            "title": "File",
+            "description": "A model file in `from_format`."
+          }
+        },
+        "type": "object",
+        "required": ["file"],
+        "title": "Body_convert_model_v1_model_convert_post"
+      },
+      "Body_find_bends_v1_features_bends_post": {
+        "properties": {
+          "file": {
+            "type": "string",
+            "format": "binary",
+            "title": "File",
+            "description": "A model file in `format`."
+          }
+        },
+        "type": "object",
+        "required": ["file"],
+        "title": "Body_find_bends_v1_features_bends_post"
+      },
+      "Body_find_holes_v1_features_holes_post": {
+        "properties": {
+          "file": {
+            "type": "string",
+            "format": "binary",
+            "title": "File",
+            "description": "A model file in `format`."
+          }
+        },
+        "type": "object",
+        "required": ["file"],
+        "title": "Body_find_holes_v1_features_holes_post"
+      },
+      "Color": {
+        "prefixItems": [
+          {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Red",
+            "description": "The amount of red light."
+          },
+          {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Green",
+            "description": "The amount of green light."
+          },
+          {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Blue",
+            "description": "The amount of blue light."
+          }
+        ],
+        "type": "array",
+        "maxItems": 3,
+        "minItems": 3
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": { "$ref": "#/components/schemas/ValidationError" },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "Hole": {
+        "properties": {
+          "center": {
+            "$ref": "#/components/schemas/Point",
+            "title": "Center",
+            "description": "Center point of the hole."
+          },
+          "dir": {
+            "$ref": "#/components/schemas/Point",
+            "title": "Direction",
+            "description": "Normal of the surface where this hole belongs to."
+          },
+          "radius": {
+            "type": "number",
+            "title": "Radius",
+            "description": "Radius of the hole."
+          },
+          "depth": {
+            "type": "number",
+            "title": "Depth",
+            "description": "Depth of the hole in the surface."
+          }
+        },
+        "type": "object",
+        "required": ["center", "dir", "radius", "depth"],
+        "title": "Hole",
+        "description": "Circular hole in a given surface."
+      },
+      "Line": {
+        "properties": {
+          "position": {
+            "$ref": "#/components/schemas/Point",
+            "title": "Position",
+            "description": "Starting position of the line."
+          },
+          "length": {
+            "type": "number",
+            "title": "Length",
+            "description": "Length of the line from the starting point."
+          },
+          "dir": {
+            "$ref": "#/components/schemas/Point",
+            "title": "Direction",
+            "description": "Direction where the line goes from the starting point."
+          },
+          "thickness": {
+            "type": "number",
+            "title": "Thickness",
+            "description": "Diameter/width of the line."
+          },
+          "color": {
+            "$ref": "#/components/schemas/Color",
+            "title": "Color",
+            "description": "Color of the line."
+          },
+          "arrow": {
+            "type": "boolean",
+            "title": "Arrow",
+            "description": "Wether this line is an arrow or not.",
+            "default": false
+          }
+        },
+        "type": "object",
+        "required": ["position", "length", "dir", "thickness", "color"],
+        "title": "Line",
+        "description": "Line in 3D space.\nStarts from the `position` and goes to the `dir` a `length` amount."
+      },
+      "ModelInfo": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid4",
+            "title": "ID",
+            "description": "Model's unique ID that can be used to retrieve its files."
+          },
+          "models": {
+            "items": { "type": "string" },
+            "type": "array",
+            "title": "Models",
+            "description": "Model file names that can be retrieved under this path."
+          },
+          "min": {
+            "$ref": "#/components/schemas/Point",
+            "title": "Minimum point",
+            "description": "Bounding box minimum."
+          },
+          "max": {
+            "$ref": "#/components/schemas/Point",
+            "title": "Maximum point",
+            "description": "Bounding box maximum."
+          },
+          "center": {
+            "$ref": "#/components/schemas/Point",
+            "title": "Center point",
+            "description": "Bounding box center."
+          },
+          "size": {
+            "$ref": "#/components/schemas/Point",
+            "title": "Model size",
+            "description": "Bounding box length."
+          }
+        },
+        "type": "object",
+        "required": ["id", "models", "min", "max", "center", "size"],
+        "title": "ModelInfo",
+        "description": "Information about a given model."
+      },
+      "Param": {
+        "properties": {
+          "title": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Title",
+            "description": "Parameters title."
+          },
+          "description": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Description",
+            "description": "Parameters description."
+          },
+          "default": {
+            "title": "Default value",
+            "description": "Default value of the parameter that is of the `type`."
+          },
+          "example": {
+            "title": "Example value",
+            "description": "Example value of the parameter that is of the `type`."
+          },
+          "type": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Type",
+            "description": "Type information about the parameter."
+          },
+          "listParams": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "$ref": "#/components/schemas/Param"
+                },
+                "type": "object"
+              },
+              { "type": "string" },
+              { "type": "null" }
+            ],
+            "title": "List param fields",
+            "description": "Param found inside the list when `type` is \"list\"."
+          },
+          "gt": {
+            "anyOf": [{ "type": "number" }, { "type": "null" }],
+            "title": "Greater than",
+            "description": "Parameter must be greater than this value."
+          },
+          "lt": {
+            "anyOf": [{ "type": "number" }, { "type": "null" }],
+            "title": "Less than",
+            "description": "Parameter must be less than this value."
+          },
+          "ge": {
+            "anyOf": [{ "type": "number" }, { "type": "null" }],
+            "title": "Greater than or equal",
+            "description": "Parameter must be greater than or equal to this value."
+          },
+          "le": {
+            "anyOf": [{ "type": "number" }, { "type": "null" }],
+            "title": "Less than or equal",
+            "description": "Parameter must be less than or equal to this value."
+          },
+          "minLength": {
+            "anyOf": [{ "type": "integer" }, { "type": "null" }],
+            "title": "Minimum array length",
+            "description": "Parameter must contain at least this amount of items."
+          },
+          "maxLength": {
+            "anyOf": [{ "type": "integer" }, { "type": "null" }],
+            "title": "Maximum array length",
+            "description": "Parameter must contain at most this amount of items."
+          }
+        },
+        "type": "object",
+        "title": "Param",
+        "description": "Information about a single parameter for a given product."
+      },
+      "Point": {
+        "prefixItems": [
+          {
+            "type": "number",
+            "title": "X",
+            "description": "The x-coordinate."
+          },
+          {
+            "type": "number",
+            "title": "Y",
+            "description": "The y-coordinate."
+          },
+          { "type": "number", "title": "Z", "description": "The z-coordinate." }
+        ],
+        "type": "array",
+        "maxItems": 3,
+        "minItems": 3
+      },
+      "ProductInfo": {
+        "properties": {
+          "title": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Product's title",
+            "description": "Generic name of the product."
+          },
+          "params": {
+            "additionalProperties": { "$ref": "#/components/schemas/Param" },
+            "type": "object",
+            "title": "Product parameters",
+            "description": "All parameters this product accepts."
+          }
+        },
+        "type": "object",
+        "required": ["title", "params"],
+        "title": "ProductInfo",
+        "description": "Information about a single product and its parameters."
+      },
+      "ProductMaterial": {
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": ["metal", "plastic"],
+            "title": "Type",
+            "description": "Material's generic category."
+          },
+          "density": {
+            "type": "number",
+            "exclusiveMinimum": 0.0,
+            "title": "Density [g/cm³]",
+            "description": "Material's density."
+          },
+          "proportion": {
+            "type": "number",
+            "title": "Proportion",
+            "description": "Proportion of this material relative to the total volume."
+          }
+        },
+        "type": "object",
+        "required": ["type", "density", "proportion"],
+        "title": "ProductMaterial",
+        "description": "Information about a single material and its proportion relative to others."
+      },
+      "ProductModel": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid4",
+            "title": "ID",
+            "description": "Model's unique ID that can be used to retrieve its files."
+          },
+          "models": {
+            "items": { "type": "string" },
+            "type": "array",
+            "title": "Models",
+            "description": "Model file names that can be retrieved under this path."
+          },
+          "min": {
+            "$ref": "#/components/schemas/Point",
+            "title": "Minimum point",
+            "description": "Bounding box minimum."
+          },
+          "max": {
+            "$ref": "#/components/schemas/Point",
+            "title": "Maximum point",
+            "description": "Bounding box maximum."
+          },
+          "center": {
+            "$ref": "#/components/schemas/Point",
+            "title": "Center point",
+            "description": "Bounding box center."
+          },
+          "size": {
+            "$ref": "#/components/schemas/Point",
+            "title": "Model size",
+            "description": "Bounding box length."
+          },
+          "materials": {
+            "items": {
+              "anyOf": [
+                { "type": "string", "enum": ["metal", "plastic"] },
+                { "type": "null" }
+              ]
+            },
+            "type": "array",
+            "title": "Materials",
+            "description": "Material found in each model."
+          },
+          "lines": {
+            "items": { "$ref": "#/components/schemas/Line" },
+            "type": "array",
+            "title": "Lines",
+            "description": "All lines to show in the visualization."
+          },
+          "spheres": {
+            "items": { "$ref": "#/components/schemas/Sphere" },
+            "type": "array",
+            "title": "Spheres",
+            "description": "All spheres to show in the visualization."
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "models",
+          "min",
+          "max",
+          "center",
+          "size",
+          "materials",
+          "lines",
+          "spheres"
+        ],
+        "title": "ProductModel",
+        "description": "Information about a given product's model."
+      },
+      "ProductProperties": {
+        "properties": {
+          "materials": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/ProductMaterial"
+            },
+            "type": "object",
+            "title": "Materials",
+            "description": "All materials found in the product and their proportions."
+          },
+          "weight": {
+            "type": "number",
+            "title": "Weight",
+            "description": "Total weight of the product."
+          },
+          "totalWeight": {
+            "anyOf": [{ "type": "number" }, { "type": "null" }],
+            "title": "Total weight",
+            "description": "Total weight of the sheet metal in production."
+          },
+          "excessWeight": {
+            "anyOf": [{ "type": "number" }, { "type": "null" }],
+            "title": "Excess weight",
+            "description": "Excess weight of the product lost in production."
+          }
+        },
+        "type": "object",
+        "required": ["materials", "weight"],
+        "title": "ProductProperties",
+        "description": "Information about product's material properties and weight."
+      },
+      "Sphere": {
+        "properties": {
+          "position": {
+            "$ref": "#/components/schemas/Point",
+            "title": "Position",
+            "description": "Center point of the sphere."
+          },
+          "radius": {
+            "type": "number",
+            "exclusiveMinimum": 0.0,
+            "title": "Radius",
+            "description": "Radius of the sphere."
+          },
+          "color": {
+            "$ref": "#/components/schemas/Color",
+            "title": "Color",
+            "description": "Color of the sphere."
+          }
+        },
+        "type": "object",
+        "required": ["position", "radius", "color"],
+        "title": "Sphere",
+        "description": "Sphere in 3D space."
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": { "anyOf": [{ "type": "string" }, { "type": "integer" }] },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": { "type": "string", "title": "Message" },
+          "type": { "type": "string", "title": "Error Type" }
+        },
+        "type": "object",
+        "required": ["loc", "msg", "type"],
+        "title": "ValidationError"
+      }
+    }
+  }
+}
