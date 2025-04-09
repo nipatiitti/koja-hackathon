@@ -31,7 +31,7 @@ const ServerRack = ({ id, setServerRacks, serverRacks }: Props) => {
   }
 
   return (
-    <div className="grid grid-cols-2 gap-4 justify-center items-center">
+    <div className="flex justify-center items-center">
       <div>
         <div className="flex justify-center items-center gap-2">
           <label className="text-sm">Name</label>
