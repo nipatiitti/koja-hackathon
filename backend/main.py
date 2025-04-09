@@ -1,7 +1,7 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 import os
-
 import requests
+import json
 
 app = FastAPI()
 
@@ -213,3 +213,45 @@ def get_models(id: str, file: str = None):
     with open(f"models/{id}/{file}", "rb") as f:
         content = f.read()
         return content
+
+@app.get("/server/rack")
+def create_server_rack(servers: int = None):
+    pass
+
+@app.get("/koja/air_conditioner")
+def create_air_conditioner(width: int, height: int, depth: int, hole_size: int, hole_x: int, hole_y: int):
+    """
+    Get air conditioner whole parts
+    """
+    if hole_size > width or hole_size > height:
+        raise HTTPException(status_code=400, detail="hole_size is larger than widht or height")
+
+    panel_request_body = {
+        "width": width,
+        "depth": height,
+        "extra_holes":[{
+             "x": hole_x,
+             "y": hole_y,
+             "width": hole_size,
+             "length": hole_size,
+             "type": "circle"
+        }]
+    }
+    panel = requests.post("https://cad.koja.fi/api/v1/products/panel/model?format=stl", json = panel_request_body)
+
+    box_request_body = {
+        "width": width,
+        "depth": depth,
+        "height": height,
+        "visualize": False,
+        "panelXPos": True,
+        "panelXNeg": True,
+        "panelYPos": False,
+        "panelYNeg": True,
+        "panelZPos": True,
+        "panelZNeg": True
+    }
+    box = requests.post("https://cad.koja.fi/api/v1/products/module/model?format=stl", json = box_request_body)
+
+    json = [panel.json(), box.json()]
+    return json
