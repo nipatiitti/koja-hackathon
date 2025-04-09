@@ -13,6 +13,48 @@ interface Props {
 
 const genId = () => Math.random().toString(36).substring(2, 9)
 
+const getServerName = () => {
+  const adjectives = ['Great', 'Super', 'Mega', 'Ultra', 'Hyper', 'Quantum', 'Agile', 'Revolutionary', 'AI-Powered']
+  const adjectives2 = ['Advanced', 'Next-Gen', 'Smart', 'Dynamic', 'Innovative', 'High-Performance']
+  const verbs = ['Power', 'Boost', 'Surge', 'Charge', 'Drive', 'AI']
+  const nouns = [
+    'Server',
+    'Node',
+    'Unit',
+    'Machine',
+    'System',
+    'Rack',
+    'Cluster',
+    'Grid',
+    'Linux',
+    'Mac',
+    'CentOS',
+    'Arch Linux',
+    'Gentoo',
+  ]
+  const randomAdjective = adjectives[Math.floor(Math.random() * adjectives.length)]
+  const randomAdjective2 = adjectives2[Math.floor(Math.random() * adjectives2.length)]
+  const randomVerb = verbs[Math.floor(Math.random() * verbs.length)]
+  const randomNoun = nouns[Math.floor(Math.random() * nouns.length)]
+  const names = [
+    `${randomAdjective} ${randomNoun}`,
+    `${randomAdjective} ${randomAdjective2} ${randomNoun}`,
+    `${randomAdjective} ${randomVerb}`,
+    `${randomAdjective} ${randomAdjective2} ${randomVerb}`,
+    `${randomAdjective} ${randomNoun} ${randomVerb}`,
+    `${randomAdjective2} ${randomNoun}`,
+    `${randomNoun} ${randomAdjective2}`,
+    `${randomAdjective} ${randomAdjective2}`,
+    `${randomNoun} ${randomAdjective2} ${randomVerb}`,
+    `${randomNoun} ${randomVerb}`,
+    `${randomVerb} ${randomNoun}`,
+    `${randomAdjective} ${randomVerb} ${randomNoun}`,
+    `${randomNoun} ${randomVerb}`,
+    `${randomAdjective} ${randomAdjective2} ${randomNoun}`,
+  ]
+  return names[Math.floor(Math.random() * names.length)]
+}
+
 const RackConfig = ({ serverRacks, setServerRacks }: Props) => {
   const [searchQuery, setSearchQuery] = useState('')
   const [achievements, setAchievements] = useAtom(achievementsAtom)
@@ -36,7 +78,7 @@ const RackConfig = ({ serverRacks, setServerRacks }: Props) => {
           id: genId(),
           serverAmount: 5,
           serverWattage: 500,
-          name: 'Server Rack ' + (prevRacks.length + 1),
+          name: getServerName(),
           highlighted: false,
           location: [prevRacks.length * 1.5, 0, 0],
         },
