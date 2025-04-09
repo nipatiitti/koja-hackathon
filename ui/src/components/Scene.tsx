@@ -88,12 +88,21 @@ const ModelViewer = ({
           // Actual models once loaded
           geometries.map((geometry, index) => (
             <mesh key={index} geometry={geometry} scale={0.001}>
-              <meshStandardMaterial
-                color={modelInfo?.materials[index] === 'plastic' ? 0x111111 : 0xffffff}
-                metalness={modelInfo?.materials[index] === 'plastic' ? 0.2 : 0.8}
-                roughness={modelInfo?.materials[index] === 'plastic' ? 0.8 : 0.05}
-                envMapIntensity={modelInfo?.materials[index] === 'plastic' ? 0.5 : 1.5}
-              />
+              {serverRack.highlighted ? (
+                <meshStandardMaterial
+                  color={'#ff0000'}
+                  metalness={modelInfo?.materials[index] === 'plastic' ? 0.2 : 0.8}
+                  roughness={modelInfo?.materials[index] === 'plastic' ? 0.8 : 0.05}
+                  envMapIntensity={modelInfo?.materials[index] === 'plastic' ? 0.5 : 1.5}
+                />
+              ) : (
+                <meshStandardMaterial
+                  color={modelInfo?.materials[index] === 'plastic' ? 0x111111 : 0xffffff}
+                  metalness={modelInfo?.materials[index] === 'plastic' ? 0.2 : 0.8}
+                  roughness={modelInfo?.materials[index] === 'plastic' ? 0.8 : 0.05}
+                  envMapIntensity={modelInfo?.materials[index] === 'plastic' ? 0.5 : 1.5}
+                />
+              )}
             </mesh>
           ))
         )}

@@ -17,6 +17,7 @@ const RackConfig = ({ serverRacks, setServerRacks }: Props) => {
         id: genId(),
         serverAmount: 3,
         name: 'Server Rack ' + (prevRacks.length + 1),
+        highlighted: false,
       },
     ])
     console.log(serverRacks)

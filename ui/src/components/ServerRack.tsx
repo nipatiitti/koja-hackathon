@@ -17,13 +17,14 @@ const ServerRack = ({ id, setServerRacks, serverRacks }: Props) => {
   }, [id, serverRacks])
 
   const updateServerRacks = (serverRack: ServerRackType) => {
-    const updatedRacks = serverRacks.map((rack) => {
-      if (rack.id === id) {
-        return { ...serverRack }
-      }
-      return rack
-    })
-    setServerRacks(updatedRacks)
+    setServerRacks((serverRacks) =>
+      serverRacks.map((rack) => {
+        if (rack.id === id) {
+          return { ...serverRack }
+        }
+        return rack
+      }),
+    )
   }
 
   const deleteServerRack = () => {
@@ -31,12 +32,27 @@ const ServerRack = ({ id, setServerRacks, serverRacks }: Props) => {
     setServerRacks(updatedRacks)
   }
 
+  const setHighlighted = (highlight: boolean) => {
+    setServerRacks((serverRacks) =>
+      serverRacks.map((rack) => {
+        if (rack.id === id) {
+          return { ...rack, highlighted: highlight }
+        }
+        return rack
+      }),
+    )
+  }
+
   if (!currentServerRack) {
     return <div>Loading...</div>
   }
 
   return (
-    <div className="relative flex flex-col rounded-sm bg-secondary gap-2 px-6 py-3 shadow-md">
+    <div
+      className="relative flex flex-col rounded-sm bg-secondary gap-2 px-6 py-3 shadow-md"
+      onMouseEnter={() => setHighlighted(true)}
+      onMouseLeave={() => setHighlighted(false)}
+    >
       <div className="flex flex-col gap-0.5 justify-start items-start">
         <button
           onClick={deleteServerRack}
