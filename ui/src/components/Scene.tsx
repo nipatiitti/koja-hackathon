@@ -3,8 +3,8 @@ import { Canvas } from '@react-three/fiber'
 import { EffectComposer, SSAO } from '@react-three/postprocessing'
 import { BlendFunction } from 'postprocessing'
 import { useEffect, useRef, useState } from 'react'
-import { BufferGeometry, Group } from 'three'
-import { STLLoader } from 'three-stdlib'
+import { BufferGeometry, Camera, Group } from 'three'
+import { OrbitControls as IOrbitControls, TransformControls as ITransformControls, STLLoader } from 'three-stdlib'
 import { Grid } from '../threejs/Grid'
 import { ServerRackType } from '../types'
 
@@ -32,18 +32,17 @@ const getModels = (modelInfo: ModelInfo) => {
 const ModelViewer = ({
   serverRack,
   defaultPosition,
-  onTransformStart,
-  onTransformEnd,
+  setOrbit,
 }: {
   serverRack: ServerRackType
   defaultPosition: [number, number, number]
-  onTransformStart: () => void
-  onTransformEnd: () => void
+  setOrbit: (enabled: boolean) => void
 }) => {
   const [modelInfo, setModelInfo] = useState<ModelInfo | null>(null)
   const [geometries, setGeometries] = useState<BufferGeometry[]>([])
   const [loading, setLoading] = useState(true)
   const groupRef = useRef<Group>(null)
+  const transform = useRef<ITransformControls<Camera>>(null)
 
   useEffect(() => {
     const loadModels = async () => {
@@ -69,14 +68,28 @@ const ModelViewer = ({
     loadModels()
   }, [serverRack.serverAmount])
 
+  useEffect(() => {
+    if (transform.current) {
+      console.log('TransformControls: ', transform.current)
+      const controls = transform.current
+      const callback = (event: Event) => {
+        // @ts-ignore
+        setOrbit(!event.value)
+      }
+      // @ts-ignore
+      controls.addEventListener('dragging-changed', callback)
+      // @ts-ignore
+      return () => controls.removeEventListener('dragging-changed', callback)
+    }
+  }, [setOrbit])
+
   return (
     <TransformControls
       mode="translate"
       position={defaultPosition}
-      onMouseDown={() => onTransformStart()}
-      onMouseUp={() => onTransformEnd()}
       translationSnap={1.4}
       rotationSnap={Math.PI / 2}
+      ref={transform}
     >
       <group ref={groupRef} rotation={[-Math.PI / 2, 0, Math.PI / 2]}>
         {loading ? (
@@ -89,21 +102,14 @@ const ModelViewer = ({
           // Actual models once loaded
           geometries.map((geometry, index) => (
             <mesh key={index} geometry={geometry} scale={0.001}>
-              {serverRack.highlighted ? (
-                <meshStandardMaterial
-                  color={'#ff0000'}
-                  metalness={modelInfo?.materials[index] === 'plastic' ? 0.2 : 0.8}
-                  roughness={modelInfo?.materials[index] === 'plastic' ? 0.8 : 0.05}
-                  envMapIntensity={modelInfo?.materials[index] === 'plastic' ? 0.5 : 1.5}
-                />
-              ) : (
-                <meshStandardMaterial
-                  color={modelInfo?.materials[index] === 'plastic' ? 0x111111 : 0xffffff}
-                  metalness={modelInfo?.materials[index] === 'plastic' ? 0.2 : 0.8}
-                  roughness={modelInfo?.materials[index] === 'plastic' ? 0.8 : 0.05}
-                  envMapIntensity={modelInfo?.materials[index] === 'plastic' ? 0.5 : 1.5}
-                />
-              )}
+              <meshStandardMaterial
+                color={
+                  serverRack.highlighted ? '#ff0000' : modelInfo?.materials[index] === 'plastic' ? 0x111111 : 0xffffff
+                }
+                metalness={modelInfo?.materials[index] === 'plastic' ? 0.2 : 0.8}
+                roughness={modelInfo?.materials[index] === 'plastic' ? 0.8 : 0.05}
+                envMapIntensity={modelInfo?.materials[index] === 'plastic' ? 0.5 : 1.5}
+              />
             </mesh>
           ))
         )}
@@ -200,19 +206,18 @@ const AirConditioner = () => {
 }
 
 export const Scene = ({ serverRacks }: { serverRacks: ServerRackType[] }) => {
-  const [transformingModelId, setTransformingModelId] = useState<string | null>(null)
+  const orbit = useRef<IOrbitControls>(null)
+
+  const setOrbit = (enabled: boolean) => {
+    if (orbit.current) {
+      orbit.current.enabled = enabled
+    }
+  }
 
   return (
     <div className="w-full h-full">
       <Canvas camera={{ position: [0, 2, 3], fov: 80 }}>
-        <OrbitControls
-          enablePan={!transformingModelId}
-          enableZoom={!transformingModelId}
-          enableRotate={!transformingModelId}
-          minDistance={1}
-          maxDistance={10}
-          target={[0, 1, 0]}
-        />
+        <OrbitControls minDistance={1} maxDistance={10} target={[0, 1, 0]} ref={orbit} />
         <Grid />
         <ambientLight intensity={2} />
         <pointLight position={[10, 10, 10]} intensity={2} />
@@ -223,8 +228,7 @@ export const Scene = ({ serverRacks }: { serverRacks: ServerRackType[] }) => {
             key={serverRack.id}
             serverRack={serverRack}
             defaultPosition={[index * 1.4, 0, 0]}
-            onTransformStart={() => setTransformingModelId(serverRack.id)}
-            onTransformEnd={() => setTransformingModelId(null)}
+            setOrbit={setOrbit}
           />
         ))}
         <AirConditioner />
