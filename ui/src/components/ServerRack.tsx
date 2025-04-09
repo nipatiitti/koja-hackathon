@@ -1,4 +1,5 @@
 import { ServerRackType } from '../types'
+import { useEffect, useState } from 'react'
 
 interface Props {
   id: number
@@ -8,6 +9,12 @@ interface Props {
 }
 
 const ServerRack = ({ id, setServerRacks, serverRacks }: Props) => {
+  const [currentServerRack, setCurrentServerRack] = useState<null | ServerRackType>()
+
+  useEffect(() => {
+    setCurrentServerRack(serverRacks.find((rack) => rack.id === id))
+  }, [])
+
   const updateServerRacks = (serverAmount: number) => {
     console.log([id, serverAmount])
     const updatedRacks = serverRacks.map((rack) => {
@@ -22,6 +29,7 @@ const ServerRack = ({ id, setServerRacks, serverRacks }: Props) => {
   return (
     <div className="grid grid-cols-2 gap-4 justify-center items-center">
       <div>
+        <input type="text" placeholder={currentServerRack.name} />
         <input
           type="number"
           id="server-amount"
