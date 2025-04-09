@@ -235,4 +235,16 @@ def create_air_conditioner_pipe(
     square_height: int = 30,
     length: int = 60,
 ):
-   return generate(wall_thickness, circular_radius, square_width, square_height, length)
+    model_info = {
+        "id": "pipemesh",
+        "models": "ventilation_pipe_{}-{}.stl".format(square_width, square_height),
+        "min": [-1, -1, -1],
+        "max": [-1, -1, -1],
+        "center": [-1, -1, -1],
+        "size": [-1, -1, -1],
+        "materials": "metal",
+        "lines": [],
+        "spheres": [],
+    }
+    box = generate(wall_thickness, circular_radius, square_width, square_height, length)
+    return json.dumps(model_info)
