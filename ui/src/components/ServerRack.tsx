@@ -41,17 +41,17 @@ const ServerRack = ({ id, setServerRacks, serverRacks }: Props) => {
           <label className="text-sm">Name</label>
           <input
             type="text"
+            className="mt-1 block w-32 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
             value={currentServerRack.name}
-            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
             onChange={(e) => updateServerRacks({ ...currentServerRack, name: e.target.value })}
           />
         </div>
         <div className="flex justify-center items-center gap-2">
-          <label className="text-sm">Server amount</label>
+          <label className="text-sm">Servers</label>
           <input
             type="number"
             id="server-amount"
-            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+            className="mt-1 block w-32 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
             placeholder="Amount of servers"
             value={currentServerRack.serverAmount}
             onChange={(e) => updateServerRacks({ ...currentServerRack, serverAmount: Number(e.target.value) })}
