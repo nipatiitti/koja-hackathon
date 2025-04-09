@@ -127,7 +127,7 @@ def create_server_rack(servers: int = 3):
     request_body = {
         "orientation": "R",
         "face_width": server_width,
-        "inst_depth": server_depth * 10, # cm to mm
+        "inst_depth": server_depth,
         "n_rows": 10,
         "tube_pitch_x": 28.84,
         "tube_pitch_y": 33.3,

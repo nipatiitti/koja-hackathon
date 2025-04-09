@@ -27,7 +27,7 @@ const RackConfig = ({ serverRacks, setServerRacks }: Props) => {
   }
 
   return (
-    <div className="flex items-center justify-center min-h-screen">
+    <div className="flex flex-col">
       <form className="w-full max-w-md p-6 bg-white rounded shadow-md" onSubmit={handleSubmit}>
         <h2 className="text-2xl font-bold mb-4 text-gray-800">Server Rack Config</h2>
         <div className="mb-4">
